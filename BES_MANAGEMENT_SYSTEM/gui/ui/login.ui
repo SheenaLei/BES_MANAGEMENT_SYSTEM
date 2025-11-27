@@ -1,26 +1,114 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>RegisterDialog</class>
- <widget class="QDialog" name="RegisterDialog">
-  <property name="windowTitle"><string>Register — Barangay E-Services</string></property>
-  <widget class="QWidget" name="formWidget">
-   <widget class="QLineEdit" name="inputFirstName"/><!-- etc -->
-   <widget class="QLineEdit" name="inputMiddleName"/>
-   <widget class="QLineEdit" name="inputLastName"/>
-   <widget class="QLineEdit" name="inputBirthdate"/>
-   <widget class="QComboBox" name="comboGender">
-    <item><property name="text"><string>Male</string></property></item>
-    <item><property name="text"><string>Female</string></property></item>
-    <item><property name="text"><string>Other</string></property></item>
-   </widget>
-   <widget class="QLineEdit" name="inputEmail"/>
-   <widget class="QLineEdit" name="inputPhone"/>
-   <widget class="QPushButton" name="btnUploadPSA"><property name="text"><string>Upload PSA</string></property></widget>
-   <widget class="QLabel" name="lblPSAPath"/>
-   <widget class="QPushButton" name="btnUploadID"><property name="text"><string>Upload ID</string></property></widget>
-   <widget class="QLabel" name="lblIDPath"/>
-   <widget class="QPushButton" name="btnSubmit"><property name="text"><string>Submit Registration</string></property></widget>
-  </widget>
+ <class>LoginDialog</class>
+ <widget class="QDialog" name="LoginDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Login — Barangay E-Services</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="label_title">
+     <property name="font">
+      <font>
+       <pointsize>16</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Barangay E-Services</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer_1">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_user">
+     <property name="text">
+      <string>Username:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="inputUsername">
+     <property name="placeholderText">
+      <string>Enter your username</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_pass">
+     <property name="text">
+      <string>Password:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="inputPassword">
+     <property name="echoMode">
+      <enum>QLineEdit::Password</enum>
+     </property>
+     <property name="placeholderText">
+      <string>Enter your password</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnLogin">
+     <property name="text">
+      <string>Login</string>
+     </property>
+     <property name="default">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnRegister">
+     <property name="text">
+      <string>Register New Account</string>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

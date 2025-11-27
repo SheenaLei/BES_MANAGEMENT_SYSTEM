@@ -1,11 +1,11 @@
 # gui/views/login_view.py
 from PyQt5 import uic, QtWidgets
 from pathlib import Path
-from app.controllers.auth_controller import AuthController
+from app.controllers.auth_controllers import AuthController
 
 UI_PATH = Path(__file__).resolve().parent.parent / "ui" / "login.ui"
 
-class LoginWindow(QtWidgets.QMainWindow):
+class LoginWindow(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
         uic.loadUi(str(UI_PATH), self)
@@ -35,7 +35,12 @@ class LoginWindow(QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.warning(self, "Error", verify.get("error", "OTP failed"))
             return
         QtWidgets.QMessageBox.information(self, "Success", "Logged in successfully")
-        # TODO: open dashboard window
+        
+        # Open Dashboard
+        from gui.views.dashboard_view import DashboardWindow
+        self.dashboard = DashboardWindow()
+        self.dashboard.show()
+        self.close()
 
     def open_register(self):
         from gui.views.register_view import RegisterDialog
