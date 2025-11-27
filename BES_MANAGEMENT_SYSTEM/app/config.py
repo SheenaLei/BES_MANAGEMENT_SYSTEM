@@ -1,10 +1,10 @@
 # app/config.py
 from pathlib import Path
 
-BASE_DIR = Path(__file__). resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Database connection
-SQLALCHEMY_DATABASE_URI = "mysql+pymysql://barangay_user:StrongPass123! @127.0.0.1:3306/barangay_db"
+SQLALCHEMY_DATABASE_URI = "mysql+pymysql://barangay_user:StrongPass123!@127.0.0.1:3306/barangay_db"
 
 # SMTP Email Settings (System sender email)
 SMTP_HOST = "smtp.gmail.com"

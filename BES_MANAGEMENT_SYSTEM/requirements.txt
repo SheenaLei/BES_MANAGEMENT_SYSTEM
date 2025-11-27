@@ -1,55 +1,29 @@
-# scripts/seed_admin.py
-from app.db import engine, Base, SessionLocal
-from app.models import Resident, Account, Service
-from sqlalchemy.exc import IntegrityError
+# Core Framework
+sqlalchemy==2.0.23
+pymysql==1.1.0
 
-def seed():
-    # create tables if not exist
-    Base.metadata.create_all(bind=engine)
+# Password Security
+passlib==1.7.4
 
-    db = SessionLocal()
-    try:
-        # seed admin resident/account
-        existing = db.query(Account).filter(Account.username == 'admin').first()
-        if existing:
-            print("Admin already exists.")
-            return
+# GUI Framework
+PyQt5==5.15.10
+PyQt5-Qt5==5.15.2
+PyQt5-sip==12.13.0
 
-        r = Resident(
-            first_name="Barangay",
-            middle_name="",
-            last_name="Captain",
-            gender="Male",
-            birthdate="1970-01-01",
-            email="captain@balibago.local",
-            phone_number="09170000000",
-            purok_zone="Purok 1"
-        )
-        db.add(r)
-        db.flush()
+# Email
+secure-smtplib==0.1.1
 
-        acc = Account(
-            resident_id=r.resident_id,
-            username="admin",
-            user_role="Admin",
-            account_status="Active"
-        )
-        acc.set_password("AdminPass123!")
-        db.add(acc)
+# Utilities
+python-dotenv==1.0.0
+cryptography==41.0.7
 
-        services = [
-            Service(name="Barangay Clearance", description="For employment", fee=25.00),
-            Service(name="Certificate of Indigency", description="Indigency certificate", fee=0.00),
-            Service(name="Barangay ID", description="Barangay identification card", fee=50.00)
-        ]
-        db.add_all(services)
-        db.commit()
-        print("Seed complete: admin created (username=admin password=AdminPass123!)")
-    except IntegrityError as e:
-        db.rollback()
-        print("Seed error:", e)
-    finally:
-        db.close()
+# Date/Time
+python-dateutil==2.8.2
 
-if __name__ == "__main__":
-    seed()
+# Testing (optional)
+pytest==7.4.3
+pytest-cov==4.1.0
+
+# Development tools (optional)
+black==23.12.1
+flake8==6.1.0

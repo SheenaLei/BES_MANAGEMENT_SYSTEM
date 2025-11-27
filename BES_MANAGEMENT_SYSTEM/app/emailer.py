@@ -82,7 +82,7 @@ Barangay Balibago, Calatagan, Batangas
         body = f"""
 Good day, {resident_name}!
 
-Your payment of ₱{amount:. 2f} for {service_name} has been verified and approved.
+Your payment of ₱{amount:.2f} for {service_name} has been verified and approved.
 
 Your request is now being processed. You will receive another notification once your document is ready for pickup.
 
