@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>RegisterDialog</class>
+ <widget class="QDialog" name="RegisterDialog">
+  <property name="windowTitle"><string>Register — Barangay E-Services</string></property>
+  <widget class="QWidget" name="formWidget">
+   <widget class="QLineEdit" name="inputFirstName"/><!-- etc -->
+   <widget class="QLineEdit" name="inputMiddleName"/>
+   <widget class="QLineEdit" name="inputLastName"/>
+   <widget class="QLineEdit" name="inputBirthdate"/>
+   <widget class="QComboBox" name="comboGender">
+    <item><property name="text"><string>Male</string></property></item>
+    <item><property name="text"><string>Female</string></property></item>
+    <item><property name="text"><string>Other</string></property></item>
+   </widget>
+   <widget class="QLineEdit" name="inputEmail"/>
+   <widget class="QLineEdit" name="inputPhone"/>
+   <widget class="QPushButton" name="btnUploadPSA"><property name="text"><string>Upload PSA</string></property></widget>
+   <widget class="QLabel" name="lblPSAPath"/>
+   <widget class="QPushButton" name="btnUploadID"><property name="text"><string>Upload ID</string></property></widget>
+   <widget class="QLabel" name="lblIDPath"/>
+   <widget class="QPushButton" name="btnSubmit"><property name="text"><string>Submit Registration</string></property></widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
