@@ -2,6 +2,7 @@
 from app.db import SessionLocal
 from app.models import DocumentUpload, Resident, StaffAuditLog, Request, Payment, Announcement, Notification
 from app.emailer import Emailer
+from app.config import get_philippine_time
 from datetime import datetime
 
 class AdminController:
@@ -41,7 +42,7 @@ class AdminController:
                 admin_id=admin_account_id,
                 action="Verify Document",
                 description=f"Upload {upload.upload_id} marked {upload.verified} by admin {admin_account_id}",
-                created_at=datetime.utcnow()
+                created_at=get_philippine_time()
             )
             db.add(log)
             db.commit()
@@ -72,7 +73,7 @@ class AdminController:
                 admin_id=admin_account_id,
                 action="Update Request Status",
                 description=f"Request {request_id} set to {new_status}",
-                created_at=datetime.utcnow()
+                created_at=get_philippine_time()
             )
             db.add(alog)
             db.commit()

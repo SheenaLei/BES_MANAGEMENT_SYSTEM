@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 from .db import SessionLocal
 from .models import Account, OTP, Resident, Admin, StaffAuditLog, ResidentLog
-from .config import OTP_EXPIRY_SECONDS, DEV_PRINT_OTP
+from .config import OTP_EXPIRY_SECONDS, DEV_PRINT_OTP, get_philippine_time
 from .emailer import Emailer
 import secrets
 
@@ -41,7 +41,7 @@ def generate_and_send_otp(account, purpose='login'):
     try:
         # Generate 6-digit code
         code = f"{secrets.randbelow(900000) + 100000}"
-        expires = datetime.utcnow() + timedelta(seconds=OTP_EXPIRY_SECONDS)
+        expires = get_philippine_time() + timedelta(seconds=OTP_EXPIRY_SECONDS)
 
         # Save OTP to database
         otp = OTP(
@@ -89,12 +89,12 @@ def verify_otp(account, code):
         if not otp:
             return {"success": False, "error": "Invalid OTP code"}
 
-        if otp.expires_at < datetime.utcnow():
+        if otp.expires_at < get_philippine_time():
             return {"success": False, "error": "OTP has expired"}
 
         # Mark as used
         otp.is_used = True
-        account.last_login = datetime.utcnow()
+        account.last_login = get_philippine_time()
         
         # LOGGING: Record the login action
         if account.user_role in ['Admin', 'Staff']:

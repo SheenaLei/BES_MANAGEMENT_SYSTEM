@@ -4,6 +4,7 @@ from sqlalchemy import Column, Integer, BigInteger, String, Date, DateTime, Bool
 from sqlalchemy.orm import relationship
 from .db import Base
 from passlib.hash import pbkdf2_sha256
+from .config import get_philippine_time
 
 
 class Resident(Base):
@@ -59,8 +60,8 @@ class Resident(Base):
     photo_path = Column(String(500))
     
     # System Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=get_philippine_time)
+    updated_at = Column(DateTime, default=get_philippine_time, onupdate=get_philippine_time)
 
     # Relationships
     account = relationship("Account", uselist=False, back_populates="resident")
@@ -90,8 +91,8 @@ class Account(Base):
     user_role = Column(Enum('Resident', 'Staff', 'Admin'), default='Resident')
     account_status = Column(Enum('Active', 'Deactivated', 'Pending'), default='Pending')
     last_login = Column(DateTime)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=get_philippine_time)
+    updated_at = Column(DateTime, default=get_philippine_time, onupdate=get_philippine_time)
 
     # Relationships
     resident = relationship("Resident", back_populates="account")
@@ -121,8 +122,8 @@ class Admin(Base):
     middle_name = Column(String(100))
     last_name = Column(String(100))
     position = Column(String(50))  # Captain, Secretary, Treasurer, IT
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=get_philippine_time)
+    updated_at = Column(DateTime, default=get_philippine_time, onupdate=get_philippine_time)
 
 
 class OTP(Base):
@@ -134,11 +135,11 @@ class OTP(Base):
     purpose = Column(Enum('login', 'password_reset', 'email_verification'), default='login')
     expires_at = Column(DateTime)
     is_used = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=get_philippine_time)
 
     def is_valid(self):
         """Check if OTP is still valid"""
-        return (not self.is_used) and (self.expires_at >= datetime.utcnow())
+        return (not self.is_used) and (self.expires_at >= get_philippine_time())
 
 
 class DocumentUpload(Base):
@@ -151,7 +152,7 @@ class DocumentUpload(Base):
     id_type = Column(String(100))  # National ID, Voter's ID, etc.
     filename = Column(String(255), nullable=False)
     file_path = Column(String(500), nullable=False)
-    uploaded_at = Column(DateTime, default=datetime.utcnow)
+    uploaded_at = Column(DateTime, default=get_philippine_time)
     verified = Column(Enum('Pending', 'Approved', 'Rejected'), default='Pending')
     verifier_admin_id = Column(BigInteger)
     verifier_reason = Column(Text)
@@ -166,7 +167,7 @@ class Service(Base):
     fee = Column(DECIMAL(10, 2), default=0.00)
     requires_payment = Column(Boolean, default=True)
     requires_documents = Column(JSON)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=get_philippine_time)
 
 
 class Request(Base):
@@ -182,8 +183,8 @@ class Request(Base):
     status = Column(Enum('Pending', 'Payment Pending', 'Approved', 'Declined', 'Cancelled', 'Completed'),
                     default='Pending')
     fee_amount = Column(DECIMAL(10, 2), default=0.00)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=get_philippine_time)
+    updated_at = Column(DateTime, default=get_philippine_time, onupdate=get_philippine_time)
     pickup_datetime = Column(DateTime)
 
 
@@ -211,17 +212,53 @@ class CertificateRequest(Base):
     # Upload
     uploaded_file_path = Column(String(500))  # Path to uploaded ID/document
     
-    # Status Management
-    status = Column(Enum('Pending', 'Approved', 'Rejected', 'Completed'), default='Pending')
+    # Status Management - workflow: Pending -> Under Review -> Processing -> Ready for Pickup -> Completed (or Declined)
+    status = Column(String(50), default='Pending')  # Pending, Under Review, Processing, Ready for Pickup, Completed, Declined
     
     # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=get_philippine_time)
+    updated_at = Column(DateTime, default=get_philippine_time, onupdate=get_philippine_time)
     reviewed_by_admin_id = Column(BigInteger)
     reviewed_at = Column(DateTime)
     
     # Relationship
     resident = relationship("Resident", backref="certificate_requests")
+
+
+class CertificatePayment(Base):
+    """Payment records for certificate requests - payments made at Barangay Hall or online"""
+    __tablename__ = "certificate_payments"
+
+    payment_id = Column(BigInteger, primary_key=True, autoincrement=True)
+    request_id = Column(BigInteger, ForeignKey('certificate_requests.request_id'), nullable=False)
+    resident_id = Column(BigInteger, ForeignKey('residents.resident_id'))
+    
+    # Certificate details (copied from request for easy display)
+    certificate_type = Column(String(100))
+    requestor_name = Column(String(255))
+    
+    # Payment details
+    quantity = Column(Integer, default=1)
+    unit_price = Column(DECIMAL(10, 2), default=0.00)  # Price per certificate
+    total_amount = Column(DECIMAL(10, 2), default=0.00)  # quantity * unit_price
+    
+    # Payment status
+    is_paid = Column(Boolean, default=False)
+    payment_method = Column(String(50), default='Cash')  # Cash, GCash, etc.
+    
+    # Admin verification
+    received_by_admin_id = Column(BigInteger)
+    received_at = Column(DateTime)
+    or_number = Column(String(50))  # Official Receipt number (for cash payments)
+    reference_number = Column(String(100))  # Reference/Transaction number (for online payments like GCash)
+    
+    # Timestamps
+    created_at = Column(DateTime, default=get_philippine_time)
+    updated_at = Column(DateTime, default=get_philippine_time, onupdate=get_philippine_time)
+    
+    # Relationships
+    certificate_request = relationship("CertificateRequest", backref="payment")
+    resident = relationship("Resident", backref="certificate_payments")
 
 
 class Payment(Base):
@@ -236,7 +273,7 @@ class Payment(Base):
     status = Column(Enum('Pending', 'Verified', 'Rejected'), default='Pending')
     verified_by_admin_id = Column(BigInteger)
     verified_at = Column(DateTime)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=get_philippine_time)
 
 
 class Announcement(Base):
@@ -245,8 +282,9 @@ class Announcement(Base):
     announcement_id = Column(BigInteger, primary_key=True, autoincrement=True)
     title = Column(String(255))
     content = Column(Text)
+    image_path = Column(String(500))  # Path to announcement image
     posted_by_admin_id = Column(BigInteger)
-    posted_at = Column(DateTime, default=datetime.utcnow)
+    posted_at = Column(DateTime, default=get_philippine_time)
     visible = Column(Boolean, default=True)
 
 
@@ -256,10 +294,12 @@ class Blotter(Base):
     blotter_id = Column(BigInteger, primary_key=True, autoincrement=True)
     complainant_name = Column(String(255))
     respondent_name = Column(String(255))
-    incident_date = Column(Date)
-    summary = Column(Text)
+    reason = Column(Text)
+    incident_date = Column(DateTime)
+    location = Column(String(255))
+    handled_by = Column(String(255))
     posted_by_admin_id = Column(BigInteger)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=get_philippine_time)
 
 
 class Notification(Base):
@@ -270,7 +310,7 @@ class Notification(Base):
     title = Column(String(255))
     message = Column(Text)
     is_read = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=get_philippine_time)
 
 
 class StaffAuditLog(Base):
@@ -281,7 +321,7 @@ class StaffAuditLog(Base):
     action = Column(String(255))
     description = Column(Text)
     ip_address = Column(String(50))
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=get_philippine_time)
 
 
 class ResidentLog(Base):
@@ -290,7 +330,7 @@ class ResidentLog(Base):
     log_id = Column(BigInteger, primary_key=True, autoincrement=True)
     resident_id = Column(BigInteger, ForeignKey('residents.resident_id'))
     request_id = Column(BigInteger)
-    action_time = Column(DateTime, default=datetime.utcnow)
+    action_time = Column(DateTime, default=get_philippine_time)
     action = Column(String(255))
     details = Column(Text)
 
@@ -300,5 +340,20 @@ class Backup(Base):
 
     backup_id = Column(BigInteger, primary_key=True, autoincrement=True)
     filename = Column(String(500))
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=get_philippine_time)
     created_by_admin_id = Column(BigInteger)
+
+
+class BarangayOfficial(Base):
+    """Model for Barangay Officials - editable by admin, viewable by users"""
+    __tablename__ = "barangay_officials"
+
+    official_id = Column(BigInteger, primary_key=True, autoincrement=True)
+    position = Column(String(100), nullable=False)  # Punong Barangay, Kagawad, SK Chairman, Secretary, Treasurer
+    full_name = Column(String(255), nullable=False)
+    photo_path = Column(String(500))  # Path to official's photo
+    display_order = Column(Integer, default=0)  # For ordering officials on display
+    category = Column(String(50), default='Sanggunian')  # Sanggunian, Other
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=get_philippine_time)
+    updated_at = Column(DateTime, default=get_philippine_time, onupdate=get_philippine_time)

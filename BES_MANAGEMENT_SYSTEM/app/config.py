@@ -1,7 +1,15 @@
 # app/config.py
 from pathlib import Path
+from datetime import datetime, timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Timezone Configuration - Philippine Time (UTC+8)
+# Using simple offset instead of pytz to avoid timezone-aware/naive comparison issues
+def get_philippine_time():
+    """Get current datetime in Philippine timezone (UTC+8)"""
+    # Get UTC time and add 8 hours for Philippine Time
+    return datetime.utcnow() + timedelta(hours=8)
 
 # Database connection
 # Using localhost since we're running on Windows (Laragon default: root user, no password)

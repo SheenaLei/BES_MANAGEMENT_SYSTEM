@@ -2,6 +2,7 @@
 from app.db import SessionLocal
 from app.models import Request, Service, DocumentUpload, Payment, Resident, ResidentLog
 from app.emailer import Emailer
+from app.config import get_philippine_time
 from datetime import datetime
 
 class RequestController:
@@ -30,7 +31,7 @@ class RequestController:
                 payment_method=payment_method,
                 fee_amount=float(service.fee or 0.0),
                 status='Payment Pending' if payment_method == 'GCash' and service.fee > 0 else 'Pending',
-                created_at=datetime.utcnow()
+                created_at=get_philippine_time()
             )
             db.add(req)
             db.flush()

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>523</width>
-    <height>581</height>
+    <width>600</width>
+    <height>607</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,7 +21,7 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>70</x>
+      <x>110</x>
       <y>20</y>
       <width>381</width>
       <height>31</height>
@@ -34,8 +34,8 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>90</y>
+      <x>100</x>
+      <y>100</y>
       <width>71</width>
       <height>31</height>
      </rect>
@@ -45,90 +45,15 @@
 </string>
     </property>
     <property name="text">
-     <string>LAST NAME</string>
+     <string>FULL NAME</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>120</y>
-      <width>201</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(255, 255, 255);</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_3">
-    <property name="geometry">
-     <rect>
-      <x>290</x>
-      <y>90</y>
-      <width>71</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(239, 239, 239);</string>
-    </property>
-    <property name="text">
-     <string>FIRST NAME</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_4">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>180</y>
-      <width>81</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(239, 239, 239);
-</string>
-    </property>
-    <property name="text">
-     <string>MIDDLE NAME</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEdit_3">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>210</y>
-      <width>151</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(255, 255, 255);</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_5">
-    <property name="geometry">
-     <rect>
-      <x>230</x>
-      <y>180</y>
-      <width>41</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(239, 239, 239);</string>
-    </property>
-    <property name="text">
-     <string>SUFFIX</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEdit_4">
-    <property name="geometry">
-     <rect>
-      <x>230</x>
-      <y>210</y>
-      <width>61</width>
+      <x>100</x>
+      <y>130</y>
+      <width>391</width>
       <height>31</height>
      </rect>
     </property>
@@ -139,8 +64,8 @@
    <widget class="QLabel" name="label_6">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>180</y>
+      <x>100</x>
+      <y>170</y>
       <width>91</width>
       <height>31</height>
      </rect>
@@ -156,22 +81,9 @@
    <widget class="QLineEdit" name="lineEdit_5">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>210</y>
+      <x>100</x>
+      <y>200</y>
       <width>151</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(255, 255, 255);</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEdit_2">
-    <property name="geometry">
-     <rect>
-      <x>290</x>
-      <y>120</y>
-      <width>201</width>
       <height>31</height>
      </rect>
     </property>
@@ -182,9 +94,9 @@
    <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>270</y>
-      <width>51</width>
+      <x>100</x>
+      <y>240</y>
+      <width>71</width>
       <height>31</height>
      </rect>
     </property>
@@ -199,8 +111,8 @@
    <widget class="QComboBox" name="comboBox">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>300</y>
+      <x>100</x>
+      <y>270</y>
       <width>150</width>
       <height>30</height>
      </rect>
@@ -254,7 +166,7 @@
      <rect>
       <x>20</x>
       <y>70</y>
-      <width>481</width>
+      <width>561</width>
       <height>551</height>
      </rect>
     </property>
@@ -268,8 +180,8 @@
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>170</x>
-      <y>450</y>
+      <x>210</x>
+      <y>480</y>
       <width>200</width>
       <height>50</height>
      </rect>
@@ -301,8 +213,8 @@ font: 700 14pt &quot;Bahnschrift&quot;;
    <widget class="QLabel" name="label_10">
     <property name="geometry">
      <rect>
-      <x>320</x>
-      <y>270</y>
+      <x>340</x>
+      <y>240</y>
       <width>131</width>
       <height>31</height>
      </rect>
@@ -318,8 +230,8 @@ font: 700 14pt &quot;Bahnschrift&quot;;
    <widget class="QComboBox" name="comboBox_3">
     <property name="geometry">
      <rect>
-      <x>320</x>
-      <y>300</y>
+      <x>340</x>
+      <y>270</y>
       <width>150</width>
       <height>30</height>
      </rect>
@@ -356,8 +268,8 @@ font: 700 14pt &quot;Bahnschrift&quot;;
    <widget class="QLabel" name="label_11">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>350</y>
+      <x>100</x>
+      <y>320</y>
       <width>250</width>
       <height>31</height>
      </rect>
@@ -385,16 +297,16 @@ font: 700 14pt &quot;Bahnschrift&quot;;
    <widget class="QLabel" name="label_12">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>390</y>
-      <width>250</width>
-      <height>30</height>
+      <x>100</x>
+      <y>360</y>
+      <width>200</width>
+      <height>100</height>
      </rect>
     </property>
     <property name="minimumSize">
      <size>
-      <width>250</width>
-      <height>30</height>
+      <width>200</width>
+      <height>100</height>
      </size>
     </property>
     <property name="maximumSize">
@@ -409,13 +321,10 @@ background-color: rgb(255, 255, 255);
 </string>
     </property>
     <property name="frameShape">
-     <enum>QFrame::Shape::StyledPanel</enum>
+     <enum>QFrame::NoFrame</enum>
     </property>
     <property name="text">
-     <string>No Image</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignCenter</set>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;br/&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;No Image&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="wordWrap">
      <bool>true</bool>
@@ -424,21 +333,21 @@ background-color: rgb(255, 255, 255);
    <widget class="QPushButton" name="pushButton_2">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>390</y>
-      <width>150</width>
+      <x>390</x>
+      <y>400</y>
+      <width>100</width>
       <height>30</height>
      </rect>
     </property>
     <property name="minimumSize">
      <size>
-      <width>150</width>
+      <width>100</width>
       <height>30</height>
      </size>
     </property>
     <property name="maximumSize">
      <size>
-      <width>150</width>
+      <width>100</width>
       <height>30</height>
      </size>
     </property>
@@ -471,8 +380,8 @@ font: 700 12pt &quot;Bahnschrift&quot;;
    <widget class="QLabel" name="label_9">
     <property name="geometry">
      <rect>
-      <x>220</x>
-      <y>270</y>
+      <x>340</x>
+      <y>170</y>
       <width>61</width>
       <height>31</height>
      </rect>
@@ -488,9 +397,9 @@ font: 700 12pt &quot;Bahnschrift&quot;;
    <widget class="QLineEdit" name="lineEdit_6">
     <property name="geometry">
      <rect>
-      <x>220</x>
-      <y>300</y>
-      <width>71</width>
+      <x>340</x>
+      <y>200</y>
+      <width>151</width>
       <height>31</height>
      </rect>
     </property>
@@ -503,14 +412,8 @@ font: 700 12pt &quot;Bahnschrift&quot;;
    <zorder>label_8</zorder>
    <zorder>label_2</zorder>
    <zorder>lineEdit</zorder>
-   <zorder>label_3</zorder>
-   <zorder>label_4</zorder>
-   <zorder>lineEdit_3</zorder>
-   <zorder>label_5</zorder>
-   <zorder>lineEdit_4</zorder>
    <zorder>label_6</zorder>
    <zorder>lineEdit_5</zorder>
-   <zorder>lineEdit_2</zorder>
    <zorder>label_7</zorder>
    <zorder>comboBox</zorder>
    <zorder>pushButton</zorder>
@@ -527,8 +430,8 @@ font: 700 12pt &quot;Bahnschrift&quot;;
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>523</width>
-     <height>33</height>
+     <width>600</width>
+     <height>26</height>
     </rect>
    </property>
   </widget>

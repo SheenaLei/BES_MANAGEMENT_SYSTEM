@@ -5,9 +5,9 @@ from app.auth import generate_and_send_otp, register_account, verify_otp
 from app.emailer import Emailer
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
+from app.config import UPLOAD_FOLDER, get_philippine_time
 import shutil
 from pathlib import Path
-from app.config import UPLOAD_FOLDER
 
 UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
 
@@ -105,7 +105,7 @@ class AuthController:
                 middle_name=middle_name,
                 last_name=last_name,
                 gender='Male',  # Default, will be updated by admin
-                birth_date=datetime.utcnow().date(),  # Placeholder, will be updated by admin
+                birth_date=get_philippine_time().date(),  # Placeholder, will be updated by admin
                 civil_status='Single',  # Default, will be updated by admin
                 barangay="Barangay Balibago",
                 municipality="Calatagan"

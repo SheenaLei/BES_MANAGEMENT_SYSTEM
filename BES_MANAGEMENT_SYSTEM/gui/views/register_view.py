@@ -1,5 +1,5 @@
 # gui/views/register_view.py
-from PyQt5 import uic, QtWidgets, QtCore
+from PyQt5 import uic, QtWidgets, QtCore, QtGui
 from pathlib import Path
 from app.controllers.auth_controllers import AuthController
 from gui.widgets.notification_bar import NotificationBar
@@ -34,8 +34,83 @@ class RegisterDialog(QtWidgets.QDialog):
         try:
             self.pushButton.clicked.connect(self.handle_register)
             self.pushButton_2.clicked.connect(self.back_to_login)
+            
+            # Setup password visibility toggles
+            self.setup_password_visibility()
+            
         except Exception as e:
-            print(f"Error connecting buttons: {e}")
+
+    def setup_password_visibility(self):
+        """Add eye icon to password fields to toggle visibility"""
+        # Create icons
+        self.icon_eye_open = self._create_eye_icon(open_eye=True)
+        self.icon_eye_closed = self._create_eye_icon(open_eye=False)
+        
+        # Password field (lineEdit_9)
+        self.password_visible = False
+        self.lineEdit_9.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.toggle_password_action = self.lineEdit_9.addAction(
+            self.icon_eye_closed,
+            QtWidgets.QLineEdit.TrailingPosition
+        )
+        self.toggle_password_action.triggered.connect(self.toggle_password)
+        
+        # Confirm Password field (lineEdit_10)
+        self.confirm_password_visible = False
+        self.lineEdit_10.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.toggle_confirm_password_action = self.lineEdit_10.addAction(
+            self.icon_eye_closed,
+            QtWidgets.QLineEdit.TrailingPosition
+        )
+        self.toggle_confirm_password_action.triggered.connect(self.toggle_confirm_password)
+    
+    def _create_eye_icon(self, open_eye=True):
+        """Draw a simple eye icon programmatically"""
+        pixmap = QtGui.QPixmap(24, 24)
+        pixmap.fill(QtCore.Qt.transparent)
+        painter = QtGui.QPainter(pixmap)
+        painter.setRenderHint(QtGui.QPainter.Antialiasing)
+        
+        # Set color (dark gray)
+        color = QtGui.QColor(80, 80, 80)
+        painter.setPen(QtGui.QPen(color, 2))
+        
+        if open_eye:
+            painter.drawEllipse(2, 6, 20, 12)  # Eye outline
+            painter.setBrush(color)
+            painter.drawEllipse(9, 9, 6, 6)    # Pupil
+        else:
+            painter.drawEllipse(2, 6, 20, 12)  # Eye outline
+            painter.setBrush(color)
+            painter.drawEllipse(9, 9, 6, 6)    # Pupil
+            pen = QtGui.QPen(color, 3)
+            painter.setPen(pen)
+            painter.drawLine(4, 20, 20, 4)     # Slash
+            
+        painter.end()
+        return QtGui.QIcon(pixmap)
+    
+    def toggle_password(self):
+        """Toggle password visibility"""
+        self.password_visible = not self.password_visible
+        
+        if self.password_visible:
+            self.lineEdit_9.setEchoMode(QtWidgets.QLineEdit.Normal)
+            self.toggle_password_action.setIcon(self.icon_eye_open)
+        else:
+            self.lineEdit_9.setEchoMode(QtWidgets.QLineEdit.Password)
+            self.toggle_password_action.setIcon(self.icon_eye_closed)
+    
+    def toggle_confirm_password(self):
+        """Toggle confirm password visibility"""
+        self.confirm_password_visible = not self.confirm_password_visible
+        
+        if self.confirm_password_visible:
+            self.lineEdit_10.setEchoMode(QtWidgets.QLineEdit.Normal)
+            self.toggle_confirm_password_action.setIcon(self.icon_eye_open)
+        else:
+            self.lineEdit_10.setEchoMode(QtWidgets.QLineEdit.Password)
+            self.toggle_confirm_password_action.setIcon(self.icon_eye_closed)
     
     def validate_resident_exists(self, first_name, last_name, middle_name=None):
         """
@@ -64,20 +139,6 @@ class RegisterDialog(QtWidgets.QDialog):
                     "Please visit the Barangay Hall to register as a resident."
                 )
             
-            # Check if any of these residents already have an account
-            for resident in residents:
-                existing_account = db.query(Account).filter(
-                    Account.resident_id == resident.resident_id
-                ).first()
-                
-                if existing_account:
-                    return (
-                        False,
-                        None,
-                        f"An account already exists for this resident (Username: {existing_account.username}). "
-                        "Please use the login page instead."
-                    )
-            
             # If multiple matches, use the first one or ask user to visit barangay
             if len(residents) > 1:
                 return (
@@ -87,11 +148,11 @@ class RegisterDialog(QtWidgets.QDialog):
                     "to verify your identity and complete account creation."
                 )
             
-            # Valid - exactly one resident found with no existing account
+            # Valid - exactly one resident found (allow multiple accounts per resident)
             return (True, residents[0].resident_id, "Resident verified!")
             
         except Exception as e:
-            print(f"Error validating resident: {e}")
+
             return (False, None, f"Error validating resident: {str(e)}")
         finally:
             db.close()

@@ -46,8 +46,8 @@ class LoginWindow(QtWidgets.QDialog):
             self.setup_password_visibility()
             
         except Exception as e:
-            print(f"Error connecting buttons: {e}")
-    
+            pass
+
     def setup_password_visibility(self):
         """Add eye icon to password field to toggle visibility"""
         self.password_visible = False
@@ -129,9 +129,9 @@ class LoginWindow(QtWidgets.QDialog):
         # Show OTP prompt
         otp_code = res.get("otp_code")
         if otp_code:
-            self.notification.show_info(f"OTP Code: {otp_code}", duration=60000)
+            self.notification.show_info(f"OTP Code: {otp_code}", duration=300000)
         else:
-            self.notification.show_info("OTP sent! Check your email or console", duration=60000)
+            self.notification.show_info("OTP sent! Check your email or console", duration=300000)
             
         # Force UI to update so notification appears BEFORE the dialog blocks it
         QtWidgets.QApplication.processEvents()
@@ -224,19 +224,18 @@ class LoginWindow(QtWidgets.QDialog):
                 from gui.views.sidebar_home_view import SidebarHomeWindow
                 self.dashboard = SidebarHomeWindow()
                 self.dashboard.show()
-                print(f"Opening ADMIN dashboard for {account.user_role}: {account.username}")
+
             else:
                 # USER DASHBOARD (Resident)
                 from gui.views.sidebar_home_user_view import SidebarHomeUserWindow
                 self.dashboard = SidebarHomeUserWindow(username=self.current_username)
                 self.dashboard.show()
-                print(f"Opening USER dashboard for: {account.username}")
-            
+
             self.close()
             
         except Exception as e:
             self.notification.show_error(f"Error opening dashboard: {e}")
-            print(f"Error: {e}")
+
             import traceback
             traceback.print_exc()
     
@@ -250,8 +249,332 @@ class LoginWindow(QtWidgets.QDialog):
             self.notification.show_success("Account created! Visit the Barangay Hall to complete registration before logging in.")
     
     def forgot_password(self):
-        """Handle forgot password"""
-        self.notification.show_info("Password recovery feature coming soon!")
+        """Handle forgot password - show reset dialog"""
+        from app.db import SessionLocal
+        from app.models import Account, OTP, Resident
+        from datetime import datetime, timedelta
+        import random
+        import string
+        
+        # Create forgot password dialog
+        dialog = QtWidgets.QDialog(self)
+        dialog.setWindowTitle("Forgot Password")
+        dialog.setFixedSize(400, 300)
+        dialog.setStyleSheet("background-color: #f5f5f5;")
+        
+        layout = QtWidgets.QVBoxLayout(dialog)
+        layout.setSpacing(15)
+        layout.setContentsMargins(30, 25, 30, 25)
+        
+        # Title
+        title = QtWidgets.QLabel("🔐 Reset Password")
+        title.setStyleSheet("font-size: 16pt; font-weight: bold; color: #1976d2;")
+        title.setAlignment(QtCore.Qt.AlignCenter)
+        layout.addWidget(title)
+        
+        # Instructions
+        instructions = QtWidgets.QLabel("Enter your username to receive a password reset code.")
+        instructions.setStyleSheet("font-size: 10pt; color: #666;")
+        instructions.setWordWrap(True)
+        instructions.setAlignment(QtCore.Qt.AlignCenter)
+        layout.addWidget(instructions)
+        
+        # Username input
+        username_label = QtWidgets.QLabel("Username:")
+        username_label.setStyleSheet("font-weight: bold;")
+        layout.addWidget(username_label)
+        
+        username_input = QtWidgets.QLineEdit()
+        username_input.setPlaceholderText("Enter your username")
+        username_input.setStyleSheet("""
+            QLineEdit {
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                font-size: 11pt;
+            }
+        """)
+        layout.addWidget(username_input)
+        
+        # Buttons
+        btn_layout = QtWidgets.QHBoxLayout()
+        
+        cancel_btn = QtWidgets.QPushButton("Cancel")
+        cancel_btn.setStyleSheet("""
+            QPushButton {
+                padding: 10px 25px;
+                background-color: #95a5a6;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                font-weight: bold;
+            }
+            QPushButton:hover { background-color: #7f8c8d; }
+        """)
+        cancel_btn.clicked.connect(dialog.reject)
+        btn_layout.addWidget(cancel_btn)
+        
+        send_btn = QtWidgets.QPushButton("Send Reset Code")
+        send_btn.setStyleSheet("""
+            QPushButton {
+                padding: 10px 25px;
+                background-color: #3498db;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                font-weight: bold;
+            }
+            QPushButton:hover { background-color: #2980b9; }
+        """)
+        btn_layout.addWidget(send_btn)
+        
+        layout.addLayout(btn_layout)
+        
+        def send_reset_code():
+            username = username_input.text().strip()
+            if not username:
+                self.notification.show_warning("Please enter your username")
+                return
+            
+            db = SessionLocal()
+            try:
+                # Find account
+                account = db.query(Account).filter(Account.username == username).first()
+                if not account:
+                    self.notification.show_error("Username not found")
+                    return
+                
+                # Generate 6-digit OTP code
+                otp_code = ''.join(random.choices(string.digits, k=6))
+                
+                # Create OTP record
+                otp = OTP(
+                    account_id=account.account_id,
+                    code=otp_code,
+                    purpose='password_reset',
+                    expires_at=datetime.now() + timedelta(minutes=10),
+                    is_used=False
+                )
+                db.add(otp)
+                db.commit()
+                
+                # Get resident info for email
+                resident = db.query(Resident).filter(Resident.resident_id == account.resident_id).first()
+                resident_name = resident.full_name() if resident else username
+                
+                dialog.accept()
+                
+                # Show reset code dialog
+                self.show_reset_code_dialog(account.account_id, otp_code, resident_name)
+                
+            except Exception as e:
+                db.rollback()
+                self.notification.show_error(f"Error: {e}")
+            finally:
+                db.close()
+        
+        send_btn.clicked.connect(send_reset_code)
+        username_input.returnPressed.connect(send_reset_code)
+        
+        dialog.exec_()
+    
+    def show_reset_code_dialog(self, account_id, otp_code, resident_name):
+        """Show dialog to enter reset code and new password"""
+        from app.db import SessionLocal
+        from app.models import Account, OTP
+        
+        # Create reset dialog
+        dialog = QtWidgets.QDialog(self)
+        dialog.setWindowTitle("Reset Password")
+        dialog.setFixedSize(500, 580)
+        dialog.setStyleSheet("background-color: #f5f5f5;")
+        
+        layout = QtWidgets.QVBoxLayout(dialog)
+        layout.setSpacing(12)
+        layout.setContentsMargins(35, 25, 35, 25)
+        
+        # Title
+        title = QtWidgets.QLabel("🔑 Enter Reset Code")
+        title.setStyleSheet("font-size: 18pt; font-weight: bold; color: #1976d2;")
+        title.setAlignment(QtCore.Qt.AlignCenter)
+        layout.addWidget(title)
+        
+        # Show the code (in production, this would be sent via email/SMS)
+        code_info = QtWidgets.QLabel(f"Your reset code is:")
+        code_info.setStyleSheet("font-size: 12pt; color: #333;")
+        code_info.setAlignment(QtCore.Qt.AlignCenter)
+        layout.addWidget(code_info)
+        
+        code_display = QtWidgets.QLabel(otp_code)
+        code_display.setStyleSheet("font-size: 28pt; font-weight: bold; color: #27ae60; background-color: #e8f5e9; padding: 15px; border-radius: 8px; letter-spacing: 8px;")
+        code_display.setAlignment(QtCore.Qt.AlignCenter)
+        code_display.setFixedHeight(70)
+        layout.addWidget(code_display)
+        
+        note = QtWidgets.QLabel("(In production, this would be sent to your email/phone)")
+        note.setStyleSheet("font-size: 9pt; color: #888; font-style: italic;")
+        note.setAlignment(QtCore.Qt.AlignCenter)
+        layout.addWidget(note)
+        
+        # Code input
+        code_label = QtWidgets.QLabel("Enter Code:")
+        code_label.setStyleSheet("font-weight: bold; font-size: 11pt;")
+        layout.addWidget(code_label)
+        
+        code_input = QtWidgets.QLineEdit()
+        code_input.setPlaceholderText("Enter 6-digit code")
+        code_input.setMaxLength(6)
+        code_input.setFixedHeight(50)
+        code_input.setStyleSheet("""
+            QLineEdit {
+                padding: 8px 10px;
+                border: 2px solid #ccc;
+                border-radius: 6px;
+                font-size: 14pt;
+                letter-spacing: 8px;
+            }
+        """)
+        layout.addWidget(code_input)
+        
+        # New password input
+        password_label = QtWidgets.QLabel("New Password:")
+        password_label.setStyleSheet("font-weight: bold; font-size: 11pt;")
+        layout.addWidget(password_label)
+        
+        password_input = QtWidgets.QLineEdit()
+        password_input.setPlaceholderText("Enter new password")
+        password_input.setEchoMode(QtWidgets.QLineEdit.Password)
+        password_input.setFixedHeight(45)
+        password_input.setStyleSheet("""
+            QLineEdit {
+                padding: 8px 10px;
+                border: 2px solid #ccc;
+                border-radius: 6px;
+                font-size: 11pt;
+            }
+        """)
+        layout.addWidget(password_input)
+        
+        # Confirm password input
+        confirm_label = QtWidgets.QLabel("Confirm Password:")
+        confirm_label.setStyleSheet("font-weight: bold; font-size: 11pt;")
+        layout.addWidget(confirm_label)
+        
+        confirm_input = QtWidgets.QLineEdit()
+        confirm_input.setPlaceholderText("Confirm new password")
+        confirm_input.setEchoMode(QtWidgets.QLineEdit.Password)
+        confirm_input.setFixedHeight(45)
+        confirm_input.setStyleSheet("""
+            QLineEdit {
+                padding: 8px 10px;
+                border: 2px solid #ccc;
+                border-radius: 6px;
+                font-size: 11pt;
+            }
+        """)
+        layout.addWidget(confirm_input)
+        
+        # Buttons
+        btn_layout = QtWidgets.QHBoxLayout()
+        btn_layout.setSpacing(15)
+        
+        cancel_btn = QtWidgets.QPushButton("Cancel")
+        cancel_btn.setFixedHeight(42)
+        cancel_btn.setStyleSheet("""
+            QPushButton {
+                padding: 10px 30px;
+                background-color: #95a5a6;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                font-weight: bold;
+                font-size: 11pt;
+            }
+            QPushButton:hover { background-color: #7f8c8d; }
+        """)
+        cancel_btn.clicked.connect(dialog.reject)
+        btn_layout.addWidget(cancel_btn)
+        
+        reset_btn = QtWidgets.QPushButton("Reset Password")
+        reset_btn.setFixedHeight(42)
+        reset_btn.setStyleSheet("""
+            QPushButton {
+                padding: 10px 30px;
+                background-color: #27ae60;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                font-weight: bold;
+                font-size: 11pt;
+            }
+            QPushButton:hover { background-color: #219a52; }
+        """)
+        btn_layout.addWidget(reset_btn)
+        
+        layout.addLayout(btn_layout)
+        
+        def reset_password():
+            code = code_input.text().strip()
+            new_password = password_input.text()
+            confirm_password = confirm_input.text()
+            
+            if not code:
+                self.notification.show_warning("Please enter the reset code")
+                return
+            
+            if not new_password:
+                self.notification.show_warning("Please enter a new password")
+                return
+            
+            if new_password != confirm_password:
+                self.notification.show_error("Passwords do not match")
+                return
+            
+            if len(new_password) < 6:
+                self.notification.show_warning("Password must be at least 6 characters")
+                return
+            
+            db = SessionLocal()
+            try:
+                # Verify OTP
+                otp = db.query(OTP).filter(
+                    OTP.account_id == account_id,
+                    OTP.code == code,
+                    OTP.purpose == 'password_reset',
+                    OTP.is_used == False
+                ).first()
+                
+                if not otp:
+                    self.notification.show_error("Invalid or expired reset code")
+                    return
+                
+                if not otp.is_valid():
+                    self.notification.show_error("Reset code has expired. Please request a new one.")
+                    return
+                
+                # Mark OTP as used
+                otp.is_used = True
+                
+                # Update password
+                account = db.query(Account).filter(Account.account_id == account_id).first()
+                if account:
+                    account.set_password(new_password)
+                    db.commit()
+                    
+                    self.notification.show_success(f"✅ Password reset successfully for {resident_name}!")
+                    dialog.accept()
+                else:
+                    self.notification.show_error("Account not found")
+                    
+            except Exception as e:
+                db.rollback()
+                self.notification.show_error(f"Error: {e}")
+            finally:
+                db.close()
+        
+        reset_btn.clicked.connect(reset_password)
+        
+        dialog.exec_()
 
 
 if __name__ == "__main__":

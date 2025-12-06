@@ -30,6 +30,13 @@ class RequestStatusWidget(QtWidgets.QWidget):
         main_layout.setContentsMargins(10, 10, 10, 10)
         main_layout.setSpacing(15)
         
+        # Set super light blue background
+        self.setStyleSheet("""
+            RequestStatusWidget {
+                background-color: #E3F2FD;
+            }
+        """)
+        
         # Title and navigation header
         header_layout = QtWidgets.QHBoxLayout()
         
@@ -61,13 +68,110 @@ class RequestStatusWidget(QtWidgets.QWidget):
         self.next_btn.clicked.connect(self.show_next_request)
         self.next_btn.setStyleSheet(self.get_nav_button_style())
         
+        # Refresh button
+        self.refresh_btn = QtWidgets.QPushButton("🔄 Refresh")
+        self.refresh_btn.clicked.connect(self.refresh_requests)
+        self.refresh_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #2196f3;
+                color: white;
+                border: none;
+                padding: 8px 15px;
+                border-radius: 5px;
+                font-size: 10pt;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #1976d2;
+            }
+            QPushButton:pressed {
+                background-color: #0d47a1;
+            }
+        """)
+        
         nav_layout.addWidget(self.prev_btn)
         nav_layout.addStretch()
         nav_layout.addWidget(self.request_counter_label)
         nav_layout.addStretch()
         nav_layout.addWidget(self.next_btn)
+        nav_layout.addWidget(self.refresh_btn)
         
         main_layout.addLayout(nav_layout)
+        
+        # FLOATING PAYMENT NOTIFICATION BANNER (only shown when status is "Ready for Pickup")
+        self.payment_banner = QtWidgets.QFrame()
+        self.payment_banner.setStyleSheet("""
+            QFrame {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                    stop:0 #ff9800, stop:1 #f57c00);
+                border-radius: 10px;
+                padding: 15px;
+            }
+        """)
+        self.payment_banner.setVisible(False)  # Hidden by default
+        
+        banner_layout = QtWidgets.QHBoxLayout(self.payment_banner)
+        banner_layout.setContentsMargins(20, 15, 20, 15)
+        banner_layout.setSpacing(15)
+        
+        # Icon
+        banner_icon = QtWidgets.QLabel("💳")
+        banner_icon.setStyleSheet("""
+            QLabel {
+                font-size: 28pt;
+                background: transparent;
+            }
+        """)
+        banner_layout.addWidget(banner_icon)
+        
+        # Text content
+        text_layout = QtWidgets.QVBoxLayout()
+        text_layout.setSpacing(5)
+        
+        banner_title = QtWidgets.QLabel("Ready for Payment!")
+        banner_title.setStyleSheet("""
+            QLabel {
+                font-size: 14pt;
+                font-weight: bold;
+                color: white;
+                background: transparent;
+            }
+        """)
+        text_layout.addWidget(banner_title)
+        
+        self.banner_message = QtWidgets.QLabel("Your certificate is ready. Please proceed to the Barangay Hall to pay and claim your document.")
+        self.banner_message.setWordWrap(True)
+        self.banner_message.setStyleSheet("""
+            QLabel {
+                font-size: 11pt;
+                color: #fff8e1;
+                background: transparent;
+            }
+        """)
+        text_layout.addWidget(self.banner_message)
+        
+        banner_layout.addLayout(text_layout, 1)
+        
+        # Close button
+        close_banner_btn = QtWidgets.QPushButton("×")
+        close_banner_btn.setFixedSize(30, 30)
+        close_banner_btn.clicked.connect(lambda: self.payment_banner.setVisible(False))
+        close_banner_btn.setStyleSheet("""
+            QPushButton {
+                background: rgba(255, 255, 255, 0.2);
+                color: white;
+                border: none;
+                border-radius: 15px;
+                font-size: 18pt;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background: rgba(255, 255, 255, 0.4);
+            }
+        """)
+        banner_layout.addWidget(close_banner_btn)
+        
+        main_layout.addWidget(self.payment_banner)
         
         # PROGRESS TRACKER (Shopee-style horizontal progress)
         progress_container = QtWidgets.QFrame()
@@ -98,9 +202,43 @@ class RequestStatusWidget(QtWidgets.QWidget):
         """)
         details_layout = QtWidgets.QVBoxLayout(details_card)
         
+        # Header row with title and cancel button
+        details_header = QtWidgets.QHBoxLayout()
+        
         details_title = QtWidgets.QLabel("Request Details")
         details_title.setStyleSheet("font-size: 12pt; font-weight: bold; color: #333; margin-bottom: 10px; background: transparent;")
-        details_layout.addWidget(details_title)
+        details_header.addWidget(details_title)
+        
+        details_header.addStretch()
+        
+        # Cancel Request button (only enabled for Pending/Under Review)
+        self.cancel_btn = QtWidgets.QPushButton("❌ Cancel Request")
+        self.cancel_btn.clicked.connect(self.cancel_request)
+        self.cancel_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #f44336;
+                color: white;
+                border: none;
+                padding: 8px 15px;
+                border-radius: 5px;
+                font-size: 10pt;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #d32f2f;
+            }
+            QPushButton:pressed {
+                background-color: #b71c1c;
+            }
+            QPushButton:disabled {
+                background-color: #ccc;
+                color: #888;
+            }
+        """)
+        self.cancel_btn.setEnabled(False)  # Disabled by default
+        details_header.addWidget(self.cancel_btn)
+        
+        details_layout.addLayout(details_header)
         
         self.details_text = QtWidgets.QLabel("No request selected")
         self.details_text.setStyleSheet("font-size: 10pt; color: #666; line-height: 1.6; background: transparent;")
@@ -274,8 +412,8 @@ class RequestStatusWidget(QtWidgets.QWidget):
             name_label = QtWidgets.QLabel(stage["name"])
             name_label.setAlignment(QtCore.Qt.AlignCenter)
             name_label.setWordWrap(True)
-            name_label.setMinimumWidth(70)
-            name_label.setMaximumWidth(110)
+            name_label.setMinimumWidth(100)  # Increased to prevent wrapping
+            name_label.setMaximumWidth(150)  # Increased to accommodate longer text
             name_label.setStyleSheet("""
                 QLabel {
                     font-size: 9pt;
@@ -354,15 +492,41 @@ class RequestStatusWidget(QtWidgets.QWidget):
             "Under Review": 1,
             "Processing": 2,
             "Ready": 3,
+            "Ready for Pickup": 3,  # Support both formats
             "Completed": 4,
-            "Rejected": -1  # Special case
+            "Rejected": -1,  # Special case
+            "Declined": -1,  # Support both formats
+            "Cancelled": -2  # Cancelled by user
         }
         
         status = request_data.get("status", "Pending")
         stage_index = status_map.get(status, 0)
         
-        # Handle rejected status (show red on first stage)
-        if status == "Rejected":
+        # Handle cancelled status (show gray/red on first stage)
+        if status == "Cancelled":
+            self.stage_widgets[0]["icon"].setStyleSheet("""
+                QLabel {
+                    background-color: #fafafa;
+                    border: 3px solid #9e9e9e;
+                    border-radius: 35px;
+                    font-size: 28pt;
+                    color: #616161;
+                    padding: 5px;
+                }
+            """)
+            self.stage_widgets[0]["name"].setStyleSheet("""
+                QLabel {
+                    font-size: 9pt;
+                    color: #616161;
+                    font-weight: bold;
+                    background: transparent;
+                    border: none;
+                }
+            """)
+            return
+        
+        # Handle rejected/declined status (show red on first stage)
+        if status in ["Rejected", "Declined"]:
             self.stage_widgets[0]["icon"].setStyleSheet("""
                 QLabel {
                     background-color: #ffebee;
@@ -449,19 +613,45 @@ class RequestStatusWidget(QtWidgets.QWidget):
                     }
                 ]
                 
-                # Add status-specific history entries
-                if req.status == "Completed":
-                    history.extend([
-                        {"timestamp": "12/02/2025 10:30", "event": "Under Review", "description": "Document verification in progress"},
-                        {"timestamp": "12/02/2025 14:15", "event": "Processing", "description": "Certificate is being prepared"},
-                        {"timestamp": "12/02/2025 16:45", "event": "Ready for Pickup", "description": "Certificate is ready at Barangay Hall"},
-                        {"timestamp": req.updated_at.strftime("%m/%d/%Y %H:%M") if req.updated_at else "", "event": "Completed", "description": "Certificate claimed successfully"}
-                    ])
-                elif req.status == "Rejected":
+                # Add status-specific history entries based on current status
+                status = req.status or "Pending"
+                updated_time = req.updated_at.strftime("%m/%d/%Y %H:%M") if req.updated_at else ""
+                
+                if status == "Under Review":
                     history.append({
-                        "timestamp": req.updated_at.strftime("%m/%d/%Y %H:%M") if req.updated_at else "",
-                        "event": "Request Rejected",
-                        "description": "Incomplete requirements. Please resubmit with valid ID."
+                        "timestamp": updated_time,
+                        "event": "Under Review",
+                        "description": "Admin is reviewing your request"
+                    })
+                elif status == "Processing":
+                    history.extend([
+                        {"timestamp": "", "event": "Under Review", "description": "Document verification completed"},
+                        {"timestamp": updated_time, "event": "Processing", "description": "Certificate is being prepared"}
+                    ])
+                elif status == "Ready for Pickup":
+                    history.extend([
+                        {"timestamp": "", "event": "Under Review", "description": "Document verification completed"},
+                        {"timestamp": "", "event": "Processing", "description": "Certificate preparation completed"},
+                        {"timestamp": updated_time, "event": "Ready for Pickup", "description": "Certificate is ready at Barangay Hall"}
+                    ])
+                elif status == "Completed":
+                    history.extend([
+                        {"timestamp": "", "event": "Under Review", "description": "Document verification completed"},
+                        {"timestamp": "", "event": "Processing", "description": "Certificate preparation completed"},
+                        {"timestamp": "", "event": "Ready for Pickup", "description": "Certificate was ready at Barangay Hall"},
+                        {"timestamp": updated_time, "event": "Completed", "description": "Certificate claimed successfully"}
+                    ])
+                elif status in ["Rejected", "Declined"]:
+                    history.append({
+                        "timestamp": updated_time,
+                        "event": "Request Declined",
+                        "description": "Your request was declined. Please contact the Barangay Hall for details."
+                    })
+                elif status == "Cancelled":
+                    history.append({
+                        "timestamp": updated_time,
+                        "event": "Request Cancelled",
+                        "description": "You cancelled this request."
                     })
                 
                 self.requests.append({
@@ -475,11 +665,10 @@ class RequestStatusWidget(QtWidgets.QWidget):
                     "quantity": req.quantity,
                     "history": history
                 })
-            
-            print(f"✅ Loaded {len(self.requests)} requests for user")
+
             
         except Exception as e:
-            print(f"❌ Error loading requests: {e}")
+
             import traceback
             traceback.print_exc()
         finally:
@@ -493,6 +682,7 @@ class RequestStatusWidget(QtWidgets.QWidget):
             self.request_counter_label.setText("Request 0 of 0")
             self.prev_btn.setEnabled(False)
             self.next_btn.setEnabled(False)
+            self.payment_banner.setVisible(False)  # Hide payment banner
             return
         
         self.current_request_index = index
@@ -504,8 +694,11 @@ class RequestStatusWidget(QtWidgets.QWidget):
             "Under Review": "#2196f3",
             "Processing": "#9c27b0",
             "Ready": "#4caf50",
+            "Ready for Pickup": "#4caf50",
             "Completed": "#4caf50",
-            "Rejected": "#f44336"
+            "Rejected": "#f44336",
+            "Declined": "#f44336",
+            "Cancelled": "#9e9e9e"
         }.get(request["status"], "#666")
         
         self.request_header_label.setText(
@@ -520,10 +713,21 @@ class RequestStatusWidget(QtWidgets.QWidget):
         self.prev_btn.setEnabled(index > 0)
         self.next_btn.setEnabled(index < len(self.requests) - 1)
         
-        # Update details
+        # Enable/disable cancel button (only for Pending and Under Review)
+        if request["status"] in ["Pending", "Under Review"]:
+            self.cancel_btn.setEnabled(True)
+            self.cancel_btn.setToolTip("Cancel this request")
+        else:
+            self.cancel_btn.setEnabled(False)
+            self.cancel_btn.setToolTip("Cannot cancel - request is already being processed")
+        
+        # Update details - capitalize names properly (john kester a. benitez → John Kester A. Benitez)
+        first_name = (request["first_name"] or "").strip().title()
+        last_name = (request["last_name"] or "").strip().title()
+        
         details_html = f"""
         <b>Certificate Type:</b> {request["certificate_type"]}<br>
-        <b>Name:</b> {request["first_name"]} {request["last_name"]}<br>
+        <b>Name:</b> {first_name} {last_name}<br>
         <b>Purpose:</b> {request["purpose"]}<br>
         <b>Quantity:</b> {request["quantity"]}<br>
         <b>Date Submitted:</b> {request["created_at"]}<br>
@@ -533,6 +737,35 @@ class RequestStatusWidget(QtWidgets.QWidget):
         
         # Update progress tracker
         self.update_progress_tracker(request["status"], request)
+        
+        # Show/hide payment banner based on status
+        if request["status"] == "Ready for Pickup":
+            # Calculate price based on certificate type
+            CERTIFICATE_PRICES = {
+                'Barangay Indigency': 0.00,
+                'Barangay Clearance': 50.00,
+                'Barangay ID': 100.00,
+                'Business Permit': 500.00
+            }
+            
+            cert_type = request.get("certificate_type", "")
+            quantity = request.get("quantity", 1)
+            unit_price = CERTIFICATE_PRICES.get(cert_type, 0.00)
+            total_price = unit_price * quantity
+            
+            # Update banner message with price
+            if total_price > 0:
+                self.banner_message.setText(
+                    f"Your certificate is ready. Please proceed to the Barangay Hall to pay <b>₱{total_price:.2f}</b> and claim your document."
+                )
+            else:
+                self.banner_message.setText(
+                    f"Your certificate is ready. Please proceed to the Barangay Hall to claim your document (FREE)."
+                )
+            
+            self.payment_banner.setVisible(True)
+        else:
+            self.payment_banner.setVisible(False)
         
         # Update history timeline
         self.update_history_timeline(request["history"])
@@ -640,3 +873,99 @@ class RequestStatusWidget(QtWidgets.QWidget):
         """Show the next request"""
         if self.current_request_index < len(self.requests) - 1:
             self.display_request(self.current_request_index + 1)
+    
+    def refresh_requests(self):
+        """Refresh requests from database"""
+
+        current_index = self.current_request_index
+        self.load_requests()
+        if self.requests:
+            # Try to go back to the same request, or show the first one
+            if current_index < len(self.requests):
+                self.display_request(current_index)
+            else:
+                self.display_request(0)
+
+    def cancel_request(self):
+        """Cancel the current request (only allowed for Pending/Under Review)"""
+        if not self.requests or self.current_request_index < 0:
+            return
+        
+        request = self.requests[self.current_request_index]
+        
+        # Double-check status
+        if request["status"] not in ["Pending", "Under Review"]:
+            QtWidgets.QMessageBox.warning(
+                self,
+                "Cannot Cancel",
+                "This request cannot be cancelled because it is already being processed.",
+                QtWidgets.QMessageBox.Ok
+            )
+            return
+        
+        # Confirmation dialog
+        reply = QtWidgets.QMessageBox.question(
+            self,
+            "Cancel Request",
+            f"Are you sure you want to cancel this request?\n\n"
+            f"Request ID: {request['id']}\n"
+            f"Certificate Type: {request['certificate_type']}\n\n"
+            f"This action cannot be undone.",
+            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+            QtWidgets.QMessageBox.No
+        )
+        
+        if reply != QtWidgets.QMessageBox.Yes:
+            return
+        
+        # Cancel the request in database
+        db = SessionLocal()
+        try:
+            cert_request = db.query(CertificateRequest).filter(
+                CertificateRequest.request_id == request["id"]
+            ).first()
+            
+            if cert_request:
+                # Check status again from database
+                if cert_request.status not in ["Pending", "Under Review"]:
+                    QtWidgets.QMessageBox.warning(
+                        self,
+                        "Cannot Cancel",
+                        "This request status has changed and cannot be cancelled anymore.",
+                        QtWidgets.QMessageBox.Ok
+                    )
+                    self.refresh_requests()
+                    return
+                
+                # Set status to Cancelled
+                cert_request.status = "Cancelled"
+                cert_request.updated_at = datetime.now()
+                db.commit()
+
+                QtWidgets.QMessageBox.information(
+                    self,
+                    "Request Cancelled",
+                    f"Your request (ID: {request['id']}) has been cancelled successfully.",
+                    QtWidgets.QMessageBox.Ok
+                )
+                
+                # Refresh to show updated status
+                self.refresh_requests()
+            else:
+                QtWidgets.QMessageBox.warning(
+                    self,
+                    "Error",
+                    "Request not found in database.",
+                    QtWidgets.QMessageBox.Ok
+                )
+                
+        except Exception as e:
+
+            QtWidgets.QMessageBox.critical(
+                self,
+                "Error",
+                f"Failed to cancel request: {e}",
+                QtWidgets.QMessageBox.Ok
+            )
+        finally:
+            db.close()

@@ -6,40 +6,25 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1209</width>
-    <height>932</height>
+    <width>1011</width>
+    <height>547</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(164, 234, 255);</string>
+   <string notr="true">
+background-color: rgb(232, 232, 232);</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>-30</y>
-      <width>1221</width>
-      <height>921</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:0.715909, stop:0 rgba(0, 0, 0, 9), stop:0.375 rgba(0, 0, 0, 50), stop:0.835227 rgba(0, 0, 0, 75));</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
    <widget class="QTableWidget" name="tableWidget">
     <property name="geometry">
      <rect>
       <x>50</x>
-      <y>90</y>
-      <width>1121</width>
-      <height>771</height>
+      <y>80</y>
+      <width>911</width>
+      <height>371</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -48,9 +33,26 @@
 }
 
 QTableWidget{
-	
+	border-radius: 25px;
 	background-color: rgb(255, 255, 255);
-}</string>
+}
+
+QHeaderView::section {
+    background-color: #0078D4;
+    color: white;
+    padding: 8px;
+    font-weight: bold;
+	font-size: 11px;
+}
+
+QTableWidget {
+    gridline-color: #d0d0d0;
+    font-size: 13px;
+}
+
+
+background-color: rgb(240, 240, 240);
+</string>
     </property>
     <property name="horizontalScrollBarPolicy">
      <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -65,16 +67,16 @@ QTableWidget{
      <bool>false</bool>
     </attribute>
     <attribute name="horizontalHeaderDefaultSectionSize">
-     <number>190</number>
+     <number>152</number>
     </attribute>
     <attribute name="horizontalHeaderMinimumSectionSize">
      <number>50</number>
     </attribute>
     <attribute name="verticalHeaderDefaultSectionSize">
-     <number>100</number>
+     <number>50</number>
     </attribute>
     <attribute name="verticalHeaderMinimumSectionSize">
-     <number>100</number>
+     <number>50</number>
     </attribute>
     <column>
      <property name="text">
@@ -107,17 +109,61 @@ QTableWidget{
      </property>
     </column>
    </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>10</y>
+      <width>911</width>
+      <height>111</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel {
+    background: qlineargradient(
+        spread:pad,
+        x1:0, y1:0,
+        x2:0, y2:1,
+        stop:0 #0d47a1,
+        stop:1 #1976d2
+    );
+    border-radius: 0px;
+}
+
+QLabel {
+    color: white;
+    font-weight: bold;
+}</string>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;ONLINE REQUEST&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>20</y>
-      <width>271</width>
-      <height>41</height>
+      <x>80</x>
+      <y>10</y>
+      <width>901</width>
+      <height>461</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel {
+    background: qlineargradient(
+        spread:pad,
+        x1:0, y1:0,
+        x2:0, y2:1,
+        stop:0 rgba(0, 0, 0, 0),
+        stop:0.4 rgba(0, 0, 0, 8),
+        stop:1 rgba(0, 0, 0, 18)
+    );
+    border-radius: 25px;
+}
+</string>
+    </property>
     <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:700;&quot;&gt;ONLINE REQUEST&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string/>
     </property>
    </widget>
    <zorder>label_2</zorder>
@@ -129,7 +175,7 @@ QTableWidget{
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1209</width>
+     <width>1011</width>
      <height>26</height>
     </rect>
    </property>

@@ -787,8 +787,8 @@ QPushButton:checked{
      <y>477</y>
     </hint>
     <hint type="destinationlabel">
-     <x>77</x>
-     <y>477</y>
+     <x>156</x>
+     <y>504</y>
     </hint>
    </hints>
   </connection>
@@ -803,8 +803,8 @@ QPushButton:checked{
      <y>423</y>
     </hint>
     <hint type="destinationlabel">
-     <x>149</x>
-     <y>451</y>
+     <x>208</x>
+     <y>450</y>
     </hint>
    </hints>
   </connection>
@@ -911,8 +911,8 @@ QPushButton:checked{
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>76</x>
-     <y>116</y>
+     <x>155</x>
+     <y>126</y>
     </hint>
     <hint type="destinationlabel">
      <x>33</x>
@@ -1007,8 +1007,8 @@ QPushButton:checked{
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>76</x>
-     <y>435</y>
+     <x>155</x>
+     <y>450</y>
     </hint>
     <hint type="destinationlabel">
      <x>33</x>
@@ -1059,8 +1059,8 @@ QPushButton:checked{
      <y>528</y>
     </hint>
     <hint type="destinationlabel">
-     <x>149</x>
-     <y>559</y>
+     <x>208</x>
+     <y>558</y>
     </hint>
    </hints>
   </connection>
@@ -1093,6 +1093,38 @@ QPushButton:checked{
     <hint type="destinationlabel">
      <x>86</x>
      <y>605</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_12</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>137</x>
+     <y>859</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>116</x>
+     <y>940</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_10</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>30</x>
+     <y>856</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>13</x>
+     <y>948</y>
     </hint>
    </hints>
   </connection>
