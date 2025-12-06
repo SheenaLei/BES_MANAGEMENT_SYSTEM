@@ -4,6 +4,7 @@ from app.models import Account, Resident, DocumentUpload
 from app.auth import generate_and_send_otp, register_account, verify_otp
 from app.emailer import Emailer
 from sqlalchemy.exc import IntegrityError
+from datetime import datetime
 import shutil
 from pathlib import Path
 from app.config import UPLOAD_FOLDER
@@ -14,7 +15,7 @@ class AuthController:
     @staticmethod
     def register_resident(personal_info: dict, files: list):
         """
-        personal_info: dict with resident fields (first_name, last_name, birthdate, email, etc.)
+        personal_info: dict with resident fields (first_name, last_name, birthdate, etc.)
         files: list of dicts: [{"path": "/local/path/to/file", "doc_type":"PSA" or "ID", "id_type":"National ID"}]
         Flow:
           - create resident row
@@ -30,17 +31,16 @@ class AuthController:
                 last_name=personal_info.get("last_name"),
                 suffix=personal_info.get("suffix"),
                 gender=personal_info.get("gender"),
-                birthdate=personal_info.get("birthdate"),
+                birth_date=personal_info.get("birthdate"),
                 civil_status=personal_info.get("civil_status"),
                 occupation=personal_info.get("occupation"),
-                is_registered_voter=personal_info.get("is_registered_voter", False),
-                phone_number=personal_info.get("phone_number"),
-                email=personal_info.get("email"),
-                purok_zone=personal_info.get("purok_zone"),
+                registered_voter=personal_info.get("is_registered_voter", False),
+                contact_number=personal_info.get("phone_number"),
+                sitio=personal_info.get("purok_zone"),
                 barangay=personal_info.get("barangay", "Barangay Balibago"),
-                date_of_residency=personal_info.get("date_of_residency"),
-                resident_status=personal_info.get("resident_status", "Permanent"),
-                remarks_set=personal_info.get("remarks_set", [])
+                municipality=personal_info.get("municipality", "Calatagan"),
+                nationality=personal_info.get("nationality", "Filipino"),
+                religion=personal_info.get("religion"),
             )
             db.add(resident)
             db.flush()  # to get resident_id
@@ -79,9 +79,70 @@ class AuthController:
             db.close()
 
     @staticmethod
+    def register_account(username: str, password: str, full_name: str):
+        """
+        Simple account registration for GUI.
+        Creates a basic resident record and account.
+        Account is created as 'Pending' until admin registers at Barangay Hall.
+        NO EMAIL REQUIRED.
+        """
+        db = SessionLocal()
+        try:
+            # Check if username already exists
+            existing_account = db.query(Account).filter(Account.username == username).first()
+            if existing_account:
+                return {"success": False, "error": "Username already exists"}
+            
+            # Parse full name (simple parsing)
+            name_parts = full_name.strip().split()
+            first_name = name_parts[0] if len(name_parts) > 0 else ""
+            last_name = name_parts[-1] if len(name_parts) > 1 else ""
+            middle_name = " ".join(name_parts[1:-1]) if len(name_parts) > 2 else ""
+            
+            # Create resident record (minimal required fields - NO EMAIL)
+            resident = Resident(
+                first_name=first_name,
+                middle_name=middle_name,
+                last_name=last_name,
+                gender='Male',  # Default, will be updated by admin
+                birth_date=datetime.utcnow().date(),  # Placeholder, will be updated by admin
+                civil_status='Single',  # Default, will be updated by admin
+                barangay="Barangay Balibago",
+                municipality="Calatagan"
+            )
+            db.add(resident)
+            db.flush()  # Get resident_id
+            
+            # Create account with PENDING status
+            account = Account(
+                resident_id=resident.resident_id,
+                username=username,
+                user_role='Resident',
+                account_status='Pending'  # Pending until admin registers at Barangay Hall
+            )
+            account.set_password(password)
+            db.add(account)
+            db.commit()
+            
+            db.refresh(account)
+            db.refresh(resident)
+            
+            return {"success": True, "account": account, "resident": resident}
+            
+        except IntegrityError as e:
+            db.rollback()
+            return {"success": False, "error": "Username already exists"}
+        except Exception as e:
+            db.rollback()
+            return {"success": False, "error": str(e)}
+        finally:
+            db.close()
+
+    @staticmethod
     def start_login(username: str, password: str):
         """
-        Validate username/password and generate OTP (2FA).
+        Validate username/password and check account status.
+        Block login if account is 'Pending' (not yet registered at Barangay Hall).
         """
         db = SessionLocal()
         try:
@@ -90,10 +151,30 @@ class AuthController:
                 return {"success": False, "error": "Account not found"}
             if not account.verify_password(password):
                 return {"success": False, "error": "Invalid credentials"}
+            
+            # CHECK ACCOUNT STATUS - Block if Pending
+            if account.account_status == 'Pending':
+                return {
+                    "success": False, 
+                    "error": "Your account is pending approval. Please visit the Barangay Hall to complete your registration."
+                }
+            
+            # CHECK ACCOUNT STATUS - Block if Inactive
+            if account.account_status != 'Active':
+                return {
+                    "success": False, 
+                    "error": f"Account is {account.account_status}. Please contact the Barangay Hall."
+                }
+            
             # generate and send OTP
             res = generate_and_send_otp(account, purpose='login')
             if res.get("success"):
-                return {"success": True, "message": "OTP sent"}
+                # Pass the OTP code back to the view
+                return {
+                    "success": True, 
+                    "message": "OTP sent", 
+                    "otp_code": res.get("otp_code")
+                }
             return {"success": False, "error": res.get("error", "Failed to generate OTP")}
         finally:
             db.close()
@@ -126,12 +207,33 @@ class AuthController:
             db.add(account)
             db.commit()
             db.refresh(account)
-            # send welcome email
-            Emailer.send_email(resident.email, "Account Created", f"Good day {resident.full_name()}! Your account has been created. You can now log in.")
             return {"success": True, "account": account}
         except IntegrityError:
             db.rollback()
-            return {"success": False, "error": "Username or email already exists"}
+            return {"success": False, "error": "Username already exists"}
+        except Exception as e:
+            db.rollback()
+            return {"success": False, "error": str(e)}
+        finally:
+            db.close()
+    
+    @staticmethod
+    def approve_account(account_id: int):
+        """
+        Called by admin to approve a pending account after registering at Barangay Hall.
+        Changes account status from 'Pending' to 'Active'.
+        """
+        db = SessionLocal()
+        try:
+            account = db.query(Account).filter(Account.account_id == account_id).first()
+            if not account:
+                return {"success": False, "error": "Account not found"}
+            
+            account.account_status = 'Active'
+            db.commit()
+            db.refresh(account)
+            
+            return {"success": True, "account": account, "message": "Account approved successfully"}
         except Exception as e:
             db.rollback()
             return {"success": False, "error": str(e)}

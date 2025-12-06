@@ -1,0 +1,776 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>RegisterDialog</class>
+ <widget class="QDialog" name="RegisterDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1000</width>
+    <height>900</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Register New Account — Barangay E-Services</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0.149254 rgba(0, 85, 0, 255), stop:1 rgba(15, 15, 15, 255));</string>
+  </property>
+  
+  <!-- Main Container with Scroll Area -->
+  <widget class="QScrollArea" name="scrollArea">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>80</y>
+     <width>900</width>
+     <height>760</height>
+    </rect>
+   </property>
+   <property name="widgetResizable">
+    <bool>true</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgba(255, 255, 255, 0.95); border-radius: 10px;</string>
+   </property>
+   <widget class="QWidget" name="scrollAreaWidgetContents">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>880</width>
+      <height>1400</height>
+     </rect>
+    </property>
+    
+    <!-- Title -->
+    <widget class="QLabel" name="labelTitle">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>20</y>
+       <width>780</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>18</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align="center"&gt;&lt;span style=" color:#005500;"&gt;Register New Account&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    
+    <!-- SECTION 1: Account Credentials -->
+    <widget class="QLabel" name="labelSection1">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>90</y>
+       <width>780</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" color:#005500;"&gt;Account Credentials&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    
+    <!-- Username -->
+    <widget class="QLabel" name="labelUsername">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>130</y>
+       <width>200</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Username: *&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="inputUsername">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>160</y>
+       <width>380</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="placeholderText">
+      <string>Enter username (unique)</string>
+     </property>
+    </widget>
+    
+    <!-- Password -->
+    <widget class="QLabel" name="labelPassword">
+     <property name="geometry">
+      <rect>
+       <x>450</x>
+       <y>130</y>
+       <width>200</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Password: *&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="inputPassword">
+     <property name="geometry">
+      <rect>
+       <x>450</x>
+       <y>160</y>
+       <width>380</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="echoMode">
+      <enum>QLineEdit::Password</enum>
+     </property>
+     <property name="placeholderText">
+      <string>Enter password</string>
+     </property>
+    </widget>
+    
+    <!-- Confirm Password -->
+    <widget class="QLabel" name="labelConfirmPassword">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>210</y>
+       <width>200</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Confirm Password: *&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="inputConfirmPassword">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>240</y>
+       <width>380</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="echoMode">
+      <enum>QLineEdit::Password</enum>
+     </property>
+     <property name="placeholderText">
+      <string>Re-enter password</string>
+     </property>
+    </widget>
+    
+    <!-- SECTION 2: Personal Information -->
+    <widget class="QLabel" name="labelSection2">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>310</y>
+       <width>780</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" color:#005500;"&gt;Personal Information&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    
+    <!-- First Name -->
+    <widget class="QLabel" name="labelFirstName">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>350</y>
+       <width>200</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;First Name: *&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="inputFirstName">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>380</y>
+       <width>250</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="placeholderText">
+      <string>First name</string>
+     </property>
+    </widget>
+    
+    <!-- Middle Name -->
+    <widget class="QLabel" name="labelMiddleName">
+     <property name="geometry">
+      <rect>
+       <x>320</x>
+       <y>350</y>
+       <width>200</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Middle Name:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="inputMiddleName">
+     <property name="geometry">
+      <rect>
+       <x>320</x>
+       <y>380</y>
+       <width>250</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="placeholderText">
+      <string>Middle name (optional)</string>
+     </property>
+    </widget>
+    
+    <!-- Last Name -->
+    <widget class="QLabel" name="labelLastName">
+     <property name="geometry">
+      <rect>
+       <x>590</x>
+       <y>350</y>
+       <width>200</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Last Name: *&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="inputLastName">
+     <property name="geometry">
+      <rect>
+       <x>590</x>
+       <y>380</y>
+       <width>240</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="placeholderText">
+      <string>Last name</string>
+     </property>
+    </widget>
+    
+    <!-- Suffix -->
+    <widget class="QLabel" name="labelSuffix">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>430</y>
+       <width>200</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Suffix:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="inputSuffix">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>460</y>
+       <width>150</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="placeholderText">
+      <string>Jr., Sr., III, etc.</string>
+     </property>
+    </widget>
+    
+    <!-- Gender -->
+    <widget class="QLabel" name="labelGender">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>430</y>
+       <width>200</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Gender: *&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboGender">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>460</y>
+       <width>200</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>Select Gender</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Male</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Female</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Other</string>
+      </property>
+     </item>
+    </widget>
+    
+    <!-- Birthdate -->
+    <widget class="QLabel" name="labelBirthdate">
+     <property name="geometry">
+      <rect>
+       <x>440</x>
+       <y>430</y>
+       <width>200</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Birthdate: *&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QDateEdit" name="dateBirthdate">
+     <property name="geometry">
+      <rect>
+       <x>440</x>
+       <y>460</y>
+       <width>200</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="calendarPopup">
+      <bool>true</bool>
+     </property>
+    </widget>
+    
+    <!-- Civil Status -->
+    <widget class="QLabel" name="labelCivilStatus">
+     <property name="geometry">
+      <rect>
+       <x>660</x>
+       <y>430</y>
+       <width>200</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Civil Status:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboCivilStatus">
+     <property name="geometry">
+      <rect>
+       <x>660</x>
+       <y>460</y>
+       <width>170</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>Single</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Married</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Widowed</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Separated</string>
+      </property>
+     </item>
+    </widget>
+    
+    <!-- SECTION 3: Contact & Address -->
+    <widget class="QLabel" name="labelSection3">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>530</y>
+       <width>780</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" color:#005500;"&gt;Contact &amp; Address Information&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    
+    <!-- Phone Number -->
+    <widget class="QLabel" name="labelPhone">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>570</y>
+       <width>200</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Phone Number:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="inputPhone">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>600</y>
+       <width>250</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="placeholderText">
+      <string>e.g., 09123456789</string>
+     </property>
+    </widget>
+    
+    <!-- Email -->
+    <widget class="QLabel" name="labelEmail">
+     <property name="geometry">
+      <rect>
+       <x>320</x>
+       <y>570</y>
+       <width>200</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Email:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="inputEmail">
+     <property name="geometry">
+      <rect>
+       <x>320</x>
+       <y>600</y>
+       <width>510</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="placeholderText">
+      <string>your.email@example.com</string>
+     </property>
+    </widget>
+    
+    <!-- Purok/Zone -->
+    <widget class="QLabel" name="labelPurok">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>650</y>
+       <width>200</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Purok/Zone:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="inputPurok">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>680</y>
+       <width>380</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="placeholderText">
+      <string>Purok/Zone</string>
+     </property>
+    </widget>
+    
+    <!-- Date of Residency -->
+    <widget class="QLabel" name="labelResidencyDate">
+     <property name="geometry">
+      <rect>
+       <x>450</x>
+       <y>650</y>
+       <width>200</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Date of Residency:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QDateEdit" name="dateResidency">
+     <property name="geometry">
+      <rect>
+       <x>450</x>
+       <y>680</y>
+       <width>200</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="calendarPopup">
+      <bool>true</bool>
+     </property>
+    </widget>
+    
+    <!-- SECTION 4: Additional Information -->
+    <widget class="QLabel" name="labelSection4">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>750</y>
+       <width>780</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" color:#005500;"&gt;Additional Information&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    
+    <!-- Occupation -->
+    <widget class="QLabel" name="labelOccupation">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>790</y>
+       <width>200</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Occupation:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="inputOccupation">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>820</y>
+       <width>380</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="placeholderText">
+      <string>Your occupation</string>
+     </property>
+    </widget>
+    
+    <!-- Resident Status -->
+    <widget class="QLabel" name="labelResidentStatus">
+     <property name="geometry">
+      <rect>
+       <x>450</x>
+       <y>790</y>
+       <width>200</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Resident Status:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboResidentStatus">
+     <property name="geometry">
+      <rect>
+       <x>450</x>
+       <y>820</y>
+       <width>200</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>Permanent</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Temporary</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Boarder</string>
+      </property>
+     </item>
+    </widget>
+    
+    <!-- Registered Voter Checkbox -->
+    <widget class="QCheckBox" name="checkRegisteredVoter">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>880</y>
+       <width>300</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>I am a registered voter</string>
+     </property>
+    </widget>
+    
+    <!-- Terms and Conditions -->
+    <widget class="QCheckBox" name="checkTerms">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>920</y>
+       <width>780</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>I agree to the Terms and Conditions and Privacy Policy</string>
+     </property>
+    </widget>
+    
+    <!-- Buttons -->
+    <widget class="QPushButton" name="btnRegister">
+     <property name="geometry">
+      <rect>
+       <x>350</x>
+       <y>980</y>
+       <width>180</width>
+       <height>45</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(0, 117, 0); color: white; border-radius: 5px;</string>
+     </property>
+     <property name="text">
+      <string>Register</string>
+     </property>
+    </widget>
+    
+    <widget class="QPushButton" name="btnCancel">
+     <property name="geometry">
+      <rect>
+       <x>550</x>
+       <y>980</y>
+       <width>180</width>
+       <height>45</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(200, 200, 200); border-radius: 5px;</string>
+     </property>
+     <property name="text">
+      <string>Cancel</string>
+     </property>
+    </widget>
+    
+    <!-- Note about required fields -->
+    <widget class="QLabel" name="labelNote">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>1050</y>
+       <width>780</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-style:italic; color:#666666;"&gt;* Required fields&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    
+   </widget>
+  </widget>
+  
+  <!-- Header Title (Outside scroll area) -->
+  <widget class="QLabel" name="labelHeader">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>20</y>
+     <width>900</width>
+     <height>50</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align="center"&gt;&lt;span style=" color:#ffffff;"&gt;Barangay E-Services Management System&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </widget>
+  
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

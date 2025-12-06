@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1097</width>
+    <height>841</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">
+background-color: rgb(216, 216, 216);</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>20</y>
+      <width>371</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt; font-weight:696;&quot;&gt;REQUEST STATUS&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QTabWidget" name="tabWidget">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>90</y>
+      <width>1035</width>
+      <height>700</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>1035</width>
+      <height>700</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>420</width>
+      <height>300</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QHeaderView::section {
+    background-color: #0078D4;
+    color: white;
+    padding: 6px;
+    font-weight: bold;
+}
+
+QTableWidget {
+    gridline-color: #ccc;
+    font-size: 14px;
+}
+
+QTableWidget::item {
+    padding: 10px;
+}
+
+
+background-color: rgb(177, 177, 177);</string>
+    </property>
+    <property name="currentIndex">
+     <number>4</number>
+    </property>
+    <widget class="QWidget" name="tab">
+     <attribute name="title">
+      <string>PENDING</string>
+     </attribute>
+     <widget class="QTableWidget" name="tableWidget_9">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>1071</width>
+        <height>661</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 255, 255);</string>
+      </property>
+      <attribute name="horizontalHeaderDefaultSectionSize">
+       <number>265</number>
+      </attribute>
+      <column>
+       <property name="text">
+        <string>NAME</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>CERTIFICATE</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>DATE</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>ACTION</string>
+       </property>
+      </column>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_2">
+     <attribute name="title">
+      <string>APPROVED</string>
+     </attribute>
+     <widget class="QTableWidget" name="tableWidget_8">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>1091</width>
+        <height>671</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 255, 255);</string>
+      </property>
+      <attribute name="horizontalHeaderDefaultSectionSize">
+       <number>265</number>
+      </attribute>
+      <column>
+       <property name="text">
+        <string>NAME</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>CERTIFICATE</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>DATE</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>ACTION</string>
+       </property>
+      </column>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_3">
+     <attribute name="title">
+      <string>REJECTED</string>
+     </attribute>
+     <widget class="QTableWidget" name="tableWidget_7">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>1091</width>
+        <height>661</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 255, 255);</string>
+      </property>
+      <attribute name="horizontalHeaderDefaultSectionSize">
+       <number>265</number>
+      </attribute>
+      <column>
+       <property name="text">
+        <string>NAME</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>CERTIFICATE</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>DATE</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>REASON</string>
+       </property>
+      </column>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_4">
+     <attribute name="title">
+      <string>CANCELLED</string>
+     </attribute>
+     <widget class="QTableWidget" name="tableWidget_6">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>1081</width>
+        <height>671</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 255, 255);</string>
+      </property>
+      <attribute name="horizontalHeaderDefaultSectionSize">
+       <number>350</number>
+      </attribute>
+      <column>
+       <property name="text">
+        <string>NAME</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>CERTIFICATE</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>DATE</string>
+       </property>
+      </column>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_5">
+     <attribute name="title">
+      <string>COMPLETED</string>
+     </attribute>
+     <widget class="QTableWidget" name="tableWidget_5">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>1091</width>
+        <height>671</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 255, 255);</string>
+      </property>
+      <attribute name="horizontalHeaderDefaultSectionSize">
+       <number>350</number>
+      </attribute>
+      <column>
+       <property name="text">
+        <string>NAME</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>CERTIFICATE</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>DATE</string>
+       </property>
+      </column>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>-120</x>
+        <y>-150</y>
+        <width>1181</width>
+        <height>861</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:0.715909, stop:0 rgba(0, 0, 0, 9), stop:0.375 rgba(0, 0, 0, 50), stop:0.835227 rgba(0, 0, 0, 75));</string>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+     <zorder>label_2</zorder>
+     <zorder>tableWidget_5</zorder>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1097</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

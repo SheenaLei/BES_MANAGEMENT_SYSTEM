@@ -9,24 +9,56 @@ from passlib.hash import pbkdf2_sha256
 class Resident(Base):
     __tablename__ = "residents"
 
+    # Primary Key
     resident_id = Column(BigInteger, primary_key=True, autoincrement=True)
+    
+    # Personal Information
+    last_name = Column(String(100), nullable=False)
     first_name = Column(String(100), nullable=False)
     middle_name = Column(String(100))
-    last_name = Column(String(100), nullable=False)
     suffix = Column(String(20))
+    
+    # Demographics
     gender = Column(Enum('Male', 'Female', 'Other'), nullable=False)
-    birthdate = Column(Date, nullable=False)
+    birth_date = Column(Date, nullable=False)
+    birth_place = Column(String(255))
     age = Column(Integer)
-    civil_status = Column(Enum('Single', 'Married', 'Widowed', 'Separated'), default='Single')
+    civil_status = Column(Enum('Single', 'Married', 'Widowed', 'Divorced', 'Separated', 'Live-in'), nullable=False)
+    
+    # Family Information
+    spouse_name = Column(String(255))
+    no_of_children = Column(Integer, default=0)
+    no_of_siblings = Column(Integer, default=0)
+    mother_full_name = Column(String(255))
+    father_full_name = Column(String(255))
+    
+    # Personal Details
+    nationality = Column(String(100), default='Filipino')
+    religion = Column(String(100))
     occupation = Column(String(150))
-    is_registered_voter = Column(Boolean, default=False)
-    phone_number = Column(String(25))
-    email = Column(String(255), unique=True)
-    purok_zone = Column(String(100))
-    barangay = Column(String(100), default='Barangay Balibago')
-    date_of_residency = Column(Date)
-    resident_status = Column(Enum('Permanent', 'Temporary', 'Boarder'), default='Permanent')
-    remarks_set = Column(JSON)  # ["Senior Citizen", "PWD", "4Ps", "Voter", "Minor"]
+    highest_educational_attainment = Column(String(100))
+    
+    # Contact Information
+    contact_number = Column(String(20))
+    emergency_contact_name = Column(String(255))
+    emergency_contact_number = Column(String(20))
+    
+    # Address Information
+    sitio = Column(String(100))
+    barangay = Column(String(100), nullable=False)
+    municipality = Column(String(100), nullable=False)
+    
+    # Government Programs & Status
+    registered_voter = Column(Boolean, default=False)
+    indigent = Column(Boolean, default=False)
+    solo_parent = Column(Boolean, default=False)
+    solo_parent_id_no = Column(String(50))
+    fourps_member = Column(Boolean, default=False)
+    
+    # Photo
+    photo_path = Column(String(500))
+    
+    # System Timestamps
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -39,8 +71,13 @@ class Resident(Base):
         return " ".join([p for p in parts if p])
 
     def get_remarks(self):
-        """Get remarks as list"""
-        return self.remarks_set if self.remarks_set else []
+        """Get remarks as list (Derived from boolean flags)"""
+        remarks = []
+        if self.indigent: remarks.append("Indigent")
+        if self.solo_parent: remarks.append("Solo Parent")
+        if self.fourps_member: remarks.append("4Ps Member")
+        if self.registered_voter: remarks.append("Voter")
+        return remarks
 
 
 class Account(Base):
@@ -148,6 +185,43 @@ class Request(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     pickup_datetime = Column(DateTime)
+
+
+# NEW MODEL FOR CERTIFICATE REQUESTS
+class CertificateRequest(Base):
+    __tablename__ = "certificate_requests"
+
+    request_id = Column(BigInteger, primary_key=True, autoincrement=True)
+    resident_id = Column(BigInteger, ForeignKey('residents.resident_id'), nullable=False)
+    
+    # Request Information
+    certificate_type = Column(Enum('Barangay Indigency', 'Barangay Clearance', 'Barangay ID', 'Business Permit'), nullable=False)
+    
+    # Requestor Details (from form)
+    last_name = Column(String(100))
+    first_name = Column(String(100))
+    middle_name = Column(String(100))
+    suffix = Column(String(20))
+    phone_number = Column(String(20))
+    
+    # Request Details
+    purpose = Column(String(255))
+    quantity = Column(Integer, default=1)
+    
+    # Upload
+    uploaded_file_path = Column(String(500))  # Path to uploaded ID/document
+    
+    # Status Management
+    status = Column(Enum('Pending', 'Approved', 'Rejected', 'Completed'), default='Pending')
+    
+    # Timestamps
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    reviewed_by_admin_id = Column(BigInteger)
+    reviewed_at = Column(DateTime)
+    
+    # Relationship
+    resident = relationship("Resident", backref="certificate_requests")
 
 
 class Payment(Base):

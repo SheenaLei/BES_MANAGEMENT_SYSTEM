@@ -97,6 +97,8 @@ Thumbs.db
 
 # MySQL dumps
 *.sql
+# Allow all schema files in db folder
+!db/*.sql
 
 # Temporary files
 tmp/

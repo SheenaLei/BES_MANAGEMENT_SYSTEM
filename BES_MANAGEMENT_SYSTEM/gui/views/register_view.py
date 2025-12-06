@@ -1,54 +1,198 @@
 # gui/views/register_view.py
-from PyQt5 import uic, QtWidgets
+from PyQt5 import uic, QtWidgets, QtCore
 from pathlib import Path
-from app.controllers.auth_controller import AuthController
+from app.controllers.auth_controllers import AuthController
+from gui.widgets.notification_bar import NotificationBar
+from app.db import SessionLocal
+from app.models import Resident, Account
 
-UI_PATH = Path(__file__).resolve().parent.parent / "ui" / "register.ui"
+UI_PATH = Path(__file__).resolve().parent.parent / "ui" / "loginUi4_sign_in.ui"
 
 class RegisterDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         uic.loadUi(str(UI_PATH), self)
-        # Expected widgets: inputFirstName, inputLastName, inputBirthdate, inputEmail, btnUploadPSA, btnUploadID, btnSubmit
+        
+        # Set window properties
+        self.setWindowTitle("Barangay E-Services - Register")
+        
+        # Create notification bar (using universal widget)
+        self.notification = NotificationBar(self)
+        
+        # Widget mapping from loginUi4_sign_in.ui:
+        # lineEdit = Last Name
+        # lineEdit_6 = First Name
+        # lineEdit_5 = Middle Name
+        # lineEdit_2 = Suffix
+        # lineEdit_7 = Username
+        # lineEdit_9 = Password
+        # lineEdit_10 = Confirm Password
+        # pushButton = Register button
+        # pushButton_2 = "Already have an account?" button
+        
+        # Connect buttons
         try:
-            self.btnUploadPSA.clicked.connect(self.upload_psa)
-            self.btnUploadID.clicked.connect(self.upload_id)
-            self.btnSubmit.clicked.connect(self.submit)
-        except Exception:
-            pass
-        self.psa_path = None
-        self.id_path = None
+            self.pushButton.clicked.connect(self.handle_register)
+            self.pushButton_2.clicked.connect(self.back_to_login)
+        except Exception as e:
+            print(f"Error connecting buttons: {e}")
+    
+    def validate_resident_exists(self, first_name, last_name, middle_name=None):
+        """
+        Validate that the person is registered as a resident in the barangay.
+        Returns (is_valid, resident_id, message)
+        """
+        db = SessionLocal()
+        try:
+            # Search for matching resident
+            query = db.query(Resident).filter(
+                Resident.first_name == first_name,
+                Resident.last_name == last_name
+            )
+            
+            # Add middle name filter if provided
+            if middle_name:
+                query = query.filter(Resident.middle_name == middle_name)
+            
+            residents = query.all()
+            
+            if not residents:
+                return (
+                    False, 
+                    None, 
+                    "You must be registered at the Barangay Hall first before creating an account. "
+                    "Please visit the Barangay Hall to register as a resident."
+                )
+            
+            # Check if any of these residents already have an account
+            for resident in residents:
+                existing_account = db.query(Account).filter(
+                    Account.resident_id == resident.resident_id
+                ).first()
+                
+                if existing_account:
+                    return (
+                        False,
+                        None,
+                        f"An account already exists for this resident (Username: {existing_account.username}). "
+                        "Please use the login page instead."
+                    )
+            
+            # If multiple matches, use the first one or ask user to visit barangay
+            if len(residents) > 1:
+                return (
+                    False,
+                    None,
+                    "Multiple residents found with this name. Please visit the Barangay Hall "
+                    "to verify your identity and complete account creation."
+                )
+            
+            # Valid - exactly one resident found with no existing account
+            return (True, residents[0].resident_id, "Resident verified!")
+            
+        except Exception as e:
+            print(f"Error validating resident: {e}")
+            return (False, None, f"Error validating resident: {str(e)}")
+        finally:
+            db.close()
+    
+    def handle_register(self):
+        """Handle registration form submission"""
+        # Get form data
+        last_name = self.lineEdit.text().strip()
+        first_name = self.lineEdit_6.text().strip()
+        middle_name = self.lineEdit_5.text().strip() or None
+        suffix = self.lineEdit_2.text().strip()
+        username = self.lineEdit_7.text().strip()
+        password = self.lineEdit_9.text().strip()
+        confirm_password = self.lineEdit_10.text().strip()
+        
+        # Validation
+        if not all([last_name, first_name, username, password, confirm_password]):
+            self.notification.show_warning("Please fill in all required fields")
+            return
+        
+        if len(username) < 4:
+            self.notification.show_warning("Username must be at least 4 characters")
+            return
+        
+        if len(password) < 8:
+            self.notification.show_warning("Password must be at least 8 characters")
+            return
+        
+        if password != confirm_password:
+            self.notification.show_error("Passwords do not match!")
+            return
+        
+        # Show processing notification
+        self.notification.show_info("Validating resident information...")
+        QtWidgets.QApplication.processEvents()
+        
+        # VALIDATE RESIDENT EXISTS IN DATABASE
+        is_valid, resident_id, message = self.validate_resident_exists(
+            first_name, last_name, middle_name
+        )
+        
+        if not is_valid:
+            self.notification.show_error(f"{message}")
+            return
+        
+        # Resident validated - proceed with account creation
+        self.notification.show_info("Creating your account...")
+        QtWidgets.QApplication.processEvents()
+        
+        # Create account linked to existing resident
+        db = SessionLocal()
+        try:
+            # Create account with PENDING status
+            account = Account(
+                resident_id=resident_id,
+                username=username,
+                user_role='Resident',
+                account_status='Active'  # Immediately active since they're already registered
+            )
+            account.set_password(password)
+            db.add(account)
+            db.commit()
+            
+            # Success
+            self.notification.show_success(
+                "Account created successfully! You can now login with your username and password."
+            )
+            
+            # Wait for user to read notification
+            QtCore.QTimer.singleShot(3000, lambda: self.accept())
+            
+        except Exception as e:
+            db.rollback()
+            error_msg = str(e)
+            
+            # Check for specific errors
+            if "duplicate" in error_msg.lower() or "unique" in error_msg.lower():
+                self.notification.show_error("Username already taken. Please choose another.")
+            else:
+                self.notification.show_error(f"Error creating account: {error_msg}")
+        finally:
+            db.close()
+    
+    def back_to_login(self):
+        """Close registration dialog and return to login"""
+        self.reject()
+    
+    def clear_form(self):
+        """Clear all form fields"""
+        self.lineEdit.clear()
+        self.lineEdit_6.clear()
+        self.lineEdit_5.clear()
+        self.lineEdit_2.clear()
+        self.lineEdit_7.clear()
+        self.lineEdit_9.clear()
+        self.lineEdit_10.clear()
 
-    def upload_psa(self):
-        path, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Select PSA / Birth Certificate", "", "Images (*.png *.jpg *.jpeg *.pdf)")
-        if path:
-            self.psa_path = path
-            self.lblPSAPath.setText(path)
 
-    def upload_id(self):
-        path, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Select ID", "", "Images (*.png *.jpg *.jpeg *.pdf)")
-        if path:
-            self.id_path = path
-            self.lblIDPath.setText(path)
-
-    def submit(self):
-        info = {
-            "first_name": self.inputFirstName.text().strip(),
-            "middle_name": self.inputMiddleName.text().strip(),
-            "last_name": self.inputLastName.text().strip(),
-            "birthdate": self.inputBirthdate.text().strip(),  # expecting YYYY-MM-DD
-            "gender": self.comboGender.currentText() if hasattr(self, "comboGender") else "Other",
-            "email": self.inputEmail.text().strip(),
-            "phone_number": self.inputPhone.text().strip(),
-        }
-        files = []
-        if self.psa_path:
-            files.append({"path": self.psa_path, "doc_type": "PSA"})
-        if self.id_path:
-            files.append({"path": self.id_path, "doc_type": "ID", "id_type": self.comboIDType.currentText() if hasattr(self, "comboIDType") else None})
-        res = AuthController.register_resident(info, files)
-        if res.get("success"):
-            QtWidgets.QMessageBox.information(self, "Success", "Registration submitted. Please wait for admin verification.")
-            self.accept()
-        else:
-            QtWidgets.QMessageBox.warning(self, "Error", res.get("error", "Registration failed"))
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    dialog = RegisterDialog()
+    dialog.show()
+    sys.exit(app.exec_())

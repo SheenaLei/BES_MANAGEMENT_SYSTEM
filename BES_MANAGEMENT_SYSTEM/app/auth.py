@@ -1,7 +1,7 @@
 # app/auth.py
 from datetime import datetime, timedelta
 from .db import SessionLocal
-from .models import Account, OTP, Resident
+from .models import Account, OTP, Resident, Admin, StaffAuditLog, ResidentLog
 from .config import OTP_EXPIRY_SECONDS, DEV_PRINT_OTP
 from .emailer import Emailer
 import secrets
@@ -54,9 +54,6 @@ def generate_and_send_otp(account, purpose='login'):
         db.commit()
         db.refresh(otp)
 
-        # Get recipient email
-        recipient = account.resident.email if account.resident else None
-
         # DEV MODE: Print to console
         if DEV_PRINT_OTP:
             print(f"\n{'=' * 50}")
@@ -65,30 +62,12 @@ def generate_and_send_otp(account, purpose='login'):
             print(f"🔐 Purpose: {purpose}")
             print(f"🔐 Expires: {expires}")
             print(f"{'=' * 50}\n")
-            return {"success": True, "otp": otp}
+            # RETURN OTP CODE HERE for GUI display
+            return {"success": True, "otp": otp, "otp_code": code}
 
-        # PRODUCTION: Send email
-        if recipient:
-            subject = f"Your Barangay E-Services OTP Code - {purpose.title()}"
-            body = f"""
-Good day! 
-
-Your One-Time Password (OTP) for {purpose} is:
-
-    {code}
-
-This code will expire at {expires.strftime('%Y-%m-%d %H:%M:%S')} UTC (10 minutes from now).
-
-If you did not request this code, please ignore this email or contact Barangay Balibago immediately. 
-
-Sincerely,
-Barangay Balibago E-Services Team
-Barangay Balibago, Calatagan, Batangas
-            """
-            Emailer.send_email(recipient, subject, body)
-            return {"success": True, "otp": otp}
-        else:
-            return {"success": False, "error": "No email found for account"}
+        # PRODUCTION: Email removed as requested
+        # Just return the code (it will be displayed in console or UI if needed)
+        return {"success": True, "otp": otp, "otp_code": code}
 
     except Exception as e:
         db.rollback()
@@ -116,6 +95,28 @@ def verify_otp(account, code):
         # Mark as used
         otp.is_used = True
         account.last_login = datetime.utcnow()
+        
+        # LOGGING: Record the login action
+        if account.user_role in ['Admin', 'Staff']:
+            admin = db.query(Admin).filter(Admin.account_id == account.account_id).first()
+            if admin:
+                log = StaffAuditLog(
+                    admin_id=admin.admin_id,
+                    action="Login",
+                    description="User logged in via OTP",
+                    ip_address="127.0.0.1"
+                )
+                db.add(log)
+        else:
+            # Resident
+            if account.resident_id:
+                log = ResidentLog(
+                    resident_id=account.resident_id,
+                    action="Login",
+                    details="Resident logged in via OTP"
+                )
+                db.add(log)
+        
         db.commit()
 
         return {"success": True, "message": "OTP verified successfully"}
