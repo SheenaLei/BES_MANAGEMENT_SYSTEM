@@ -93,7 +93,7 @@ QPushButton:checked{
          <item>
           <layout class="QVBoxLayout" name="verticalLayout">
            <property name="spacing">
-            <number>15</number>
+            <number>25</number>
            </property>
            <item>
             <widget class="QPushButton" name="pushButton">
@@ -186,67 +186,6 @@ QPushButton:checked{
              <property name="icon">
               <iconset>
                <normaloff>../../../../Download/1000020327 (1).jpg</normaloff>../../../../Download/1000020327 (1).jpg</iconset>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="autoExclusive">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton_6">
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);</string>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normaloff>../../../../Download/1000020343.jpg</normaloff>../../../../Download/1000020343.jpg</iconset>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="autoExclusive">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton_7">
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);
-</string>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normaloff>../../../../Download/1000020297.jpg</normaloff>../../../../Download/1000020297.jpg</iconset>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="autoExclusive">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton_8">
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);</string>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normaloff>../../../../Download/1000020296.jpg</normaloff>../../../../Download/1000020296.jpg</iconset>
              </property>
              <property name="checkable">
               <bool>true</bool>
@@ -401,7 +340,7 @@ QPushButton:checked{
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <property name="spacing">
-            <number>15</number>
+            <number>25</number>
            </property>
            <item>
             <widget class="QPushButton" name="pushButton_15">
@@ -489,57 +428,6 @@ QPushButton:checked{
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_16">
-             <property name="text">
-              <string>PAYMENT</string>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normaloff>../../../../Download/1000020343.jpg</normaloff>../../../../Download/1000020343.jpg</iconset>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="autoExclusive">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton_19">
-             <property name="text">
-              <string>HISTORY</string>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normaloff>../../../../Download/1000020297.jpg</normaloff>../../../../Download/1000020297.jpg</iconset>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="autoExclusive">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton_20">
-             <property name="text">
-              <string>BLOTTER</string>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normaloff>../../../../Download/1000020296.jpg</normaloff>../../../../Download/1000020296.jpg</iconset>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="autoExclusive">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QPushButton" name="pushButton_11">
              <property name="text">
               <string>OFFICIALS</string>
@@ -593,7 +481,7 @@ QPushButton:checked{
        <item>
         <widget class="QPushButton" name="pushButton_12">
          <property name="text">
-          <string>PROFILE</string>
+          <string>LOG OUT</string>
          </property>
          <property name="icon">
           <iconset>
@@ -777,54 +665,6 @@ QPushButton:checked{
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_8</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>pushButton_20</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>31</x>
-     <y>477</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>77</x>
-     <y>477</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_7</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>pushButton_19</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>28</x>
-     <y>423</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>149</x>
-     <y>451</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_6</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>pushButton_16</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>24</x>
-     <y>371</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>82</x>
-     <y>374</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>pushButton_5</sender>
    <signal>toggled(bool)</signal>
    <receiver>pushButton_14</receiver>
@@ -981,54 +821,6 @@ QPushButton:checked{
     <hint type="destinationlabel">
      <x>31</x>
      <y>329</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_16</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>pushButton_6</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>80</x>
-     <y>385</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>30</x>
-     <y>382</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_19</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>pushButton_7</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>76</x>
-     <y>435</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>33</x>
-     <y>433</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_20</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>pushButton_8</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>87</x>
-     <y>489</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>34</x>
-     <y>483</y>
     </hint>
    </hints>
   </connection>

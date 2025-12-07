@@ -2362,7 +2362,50 @@ class SidebarHomeUserWindow(QtWidgets.QMainWindow):
 
     def show_allabout_page(self):
         """Show all about page"""
-        self.notification.show_info("ℹ️ All About page")
+        try:
+            # Use the fixed All About UI (clean file)
+            about_ui_path = Path(__file__).resolve().parent.parent / "ui" / "ALL_ABOUT_user_fixed.ui"
+
+            if not about_ui_path.exists():
+                self.notification.show_error(f"❌ All About UI file not found: {about_ui_path}")
+                return
+
+            # Load the UI (designer saved as QMainWindow)
+            temp_window = QtWidgets.QMainWindow()
+            uic.loadUi(str(about_ui_path), temp_window)
+
+            about_widget = temp_window.centralWidget()
+            if not about_widget:
+                self.notification.show_error("❌ No central widget found in All About UI")
+                return
+
+            # Detach from temp window
+            about_widget.setParent(None)
+            about_widget.setStyleSheet("background-color: white;")
+            
+            # Set expanding size policy to grow with window
+            about_widget.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+            # Minimum size ensures all content is visible when window is smaller
+            about_widget.setMinimumSize(1024, 1366)
+
+            scroll_area = QtWidgets.QScrollArea()
+            scroll_area.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+            scroll_area.setWidget(about_widget)
+            scroll_area.setWidgetResizable(True)  # Allow widget to expand with scroll area
+            scroll_area.setFrameShape(QtWidgets.QFrame.NoFrame)
+            scroll_area.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+            scroll_area.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+            scroll_area.setContentsMargins(0, 0, 0, 0)
+            scroll_area.setViewportMargins(0, 0, 0, 0)
+            scroll_area.setStyleSheet("QScrollArea { background-color: white; border: none; margin: 0px; padding: 0px; }")
+
+            self.replace_content(scroll_area)
+            self.notification.show_info("ℹ️ All About page")
+
+        except Exception as e:
+            self.notification.show_error(f"❌ Error loading All About page: {e}")
+            import traceback
+            traceback.print_exc()
 
     def handle_logout(self):
         """Handle logout"""

@@ -136,26 +136,6 @@ QPushButton:checked{
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_3">
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);</string>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normaloff>../../../../Download/1000020291.jpg</normaloff>../../../../Download/1000020291.jpg</iconset>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="autoExclusive">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QPushButton" name="pushButton_4">
              <property name="styleSheet">
               <string notr="true">background-color: rgb(255, 255, 255);</string>
@@ -206,27 +186,6 @@ QPushButton:checked{
              <property name="icon">
               <iconset>
                <normaloff>../../../../Download/1000020294.jpg</normaloff>../../../../Download/1000020294.jpg</iconset>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="autoExclusive">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton_7">
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);
-</string>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normaloff>../../../../Download/1000020297.jpg</normaloff>../../../../Download/1000020297.jpg</iconset>
              </property>
              <property name="checkable">
               <bool>true</bool>
@@ -438,23 +397,6 @@ QPushButton:checked{
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_17">
-             <property name="text">
-              <string>NOTIFICATIONS</string>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normaloff>../../../../Download/1000020291.jpg</normaloff>../../../../Download/1000020291.jpg</iconset>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="autoExclusive">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QPushButton" name="pushButton_18">
              <property name="text">
               <string>ANNOUNCEMENT</string>
@@ -496,23 +438,6 @@ QPushButton:checked{
              <property name="icon">
               <iconset>
                <normaloff>../../../../Download/1000020294.jpg</normaloff>../../../../Download/1000020294.jpg</iconset>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="autoExclusive">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton_19">
-             <property name="text">
-              <string>HISTORY</string>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normaloff>../../../../Download/1000020297.jpg</normaloff>../../../../Download/1000020297.jpg</iconset>
              </property>
              <property name="checkable">
               <bool>true</bool>
@@ -593,7 +518,7 @@ QPushButton:checked{
        <item>
         <widget class="QPushButton" name="pushButton_12">
          <property name="text">
-          <string>PROFILE</string>
+          <string>LOG OUT</string>
          </property>
          <property name="icon">
           <iconset>
@@ -793,22 +718,6 @@ QPushButton:checked{
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_7</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>pushButton_19</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>28</x>
-     <y>423</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>208</x>
-     <y>450</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>pushButton_6</sender>
    <signal>toggled(bool)</signal>
    <receiver>pushButton_16</receiver>
@@ -853,22 +762,6 @@ QPushButton:checked{
     <hint type="destinationlabel">
      <x>147</x>
      <y>263</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_3</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>pushButton_17</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>29</x>
-     <y>193</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>145</x>
-     <y>217</y>
     </hint>
    </hints>
   </connection>
@@ -937,22 +830,6 @@ QPushButton:checked{
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_17</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>pushButton_3</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>85</x>
-     <y>210</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>41</x>
-     <y>207</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>pushButton_18</sender>
    <signal>toggled(bool)</signal>
    <receiver>pushButton_4</receiver>
@@ -997,22 +874,6 @@ QPushButton:checked{
     <hint type="destinationlabel">
      <x>30</x>
      <y>382</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_19</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>pushButton_7</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>155</x>
-     <y>450</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>33</x>
-     <y>433</y>
     </hint>
    </hints>
   </connection>

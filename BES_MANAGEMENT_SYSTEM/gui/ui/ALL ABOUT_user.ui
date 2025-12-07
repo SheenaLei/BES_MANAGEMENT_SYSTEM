@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1024</width>
+     <height>720</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+     <width>0</width>
+     <height>0</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+     <width>16777215</width>
+     <height>16777215</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(255, 255, 255);</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+   </property>
+   <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>620</y>
+       <width>311</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel{
+     background-color: qlineargradient(spread:pad, x1:0.231, y1:0.310227, x2:1, y2:1, stop:0 rgba(0, 98, 255, 239), stop:1 rgba(240, 240, 240, 255));
+     font: 700 14pt "Book Antiqua";
+}</string>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align="center"&gt;&lt;span style=" font-size:16pt;"&gt;Purpose of the System&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>680</y>
+       <width>1271</width>
+       <height>291</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 255, 255);
+border: 5px solid blue;
+border-radius: 5px;
+font: 12pt "Segoe UI";
+
+
+</string>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This system was created to:&lt;/p&gt;&lt;ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;"&gt;&lt;li style=" margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;Provide a &lt;span style=" font-weight:696;"&gt;faster and more organized&lt;/span&gt; way for residents to request barangay documents such&lt;/li&gt;&lt;p&gt;as Barangay Clearance, Indigency, and other certifications.&lt;/p&gt;&lt;li style=" margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;Allow barangay staff and officials to &lt;span style=" font-weight:696;"&gt;manage, verify, and approve requests &lt;/span&gt;using a secure and centralized platform.&lt;/li&gt;&lt;li style=" margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;Ensure &lt;span style=" font-weight:696;"&gt;accurate record-keeping&lt;/span&gt; of residents, requests, payments, and transaction&lt;/li&gt;&lt;p&gt;histories.&lt;/p&gt;&lt;li style=" margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;Improve transparency by allowing users to &lt;span style=" font-weight:696;"&gt;view the status&lt;/span&gt; of their requests anytime. &lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>990</y>
+      <width>301</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel{
+	background-color: qlineargradient(spread:pad, x1:0.231, y1:0.310227, x2:1, y2:1, stop:0 rgba(0, 98, 255, 239), stop:1 rgba(240, 240, 240, 255));
+	font: 700 14pt &quot;Book Antiqua&quot;;
+}</string>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Goal of This System&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>1050</y>
+      <width>1271</width>
+      <height>261</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 255, 255);
+border: 5px solid blue;
+border-radius: 5px;
+font: 12pt &quot;Segoe UI&quot;;
+
+</string>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The primary goal is to bring &lt;span style=&quot; font-weight:696;&quot;&gt;digital transformation&lt;/span&gt; to the barangay by:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Making services &lt;span style=&quot; font-weight:696;&quot;&gt;more accessible&lt;/span&gt;&lt;/li&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Reducing long lines and processing delays&lt;/li&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Strengthening &lt;span style=&quot; font-weight:696;&quot;&gt;data security&lt;/span&gt;&lt;/li&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Ensuring &lt;span style=&quot; font-weight:696;&quot;&gt;transparency and accountability&lt;/span&gt;&lt;/li&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Providing a platform that is &lt;span style=&quot; font-weight:696;&quot;&gt;organized, modern, and future-ready&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>-40</x>
+      <y>0</y>
+      <width>1411</width>
+      <height>611</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: qlineargradient(spread:pad, x1:0.527174, y1:0.699, x2:1, y2:0.614, stop:0.149254 rgba(0, 102, 210, 248), stop:1 rgba(7, 27, 72, 240));</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>../../../../Download/1000006701.jpeg</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>1371</width>
+      <height>611</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(25, 118, 210, 180), stop:1 rgba(4, 15, 40, 220));
+
+color: rgb(255, 255, 255);</string>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:36pt;&quot;&gt;BARANGAY E-SERVICES MANAGEMENT SYSTEM&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:24pt;&quot;&gt;BALIBAGO, CALATAGAN, BATANGAS&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;br/&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;br/&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Barangay E-Services Management System is a digital platform designed to modernize&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;and simplify barangay operations in Barangay Balibago, Calatagan, Batangas.&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;This system replaces manual paperwork with a secure, automated process where residents&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;can register, request documents, and track the status of their transactions.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>860</x>
+      <y>850</y>
+      <width>451</width>
+      <height>451</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>../../../../Download/1000020410.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <zorder>label_6</zorder>
+   <zorder>label_2</zorder>
+   <zorder>label_4</zorder>
+   <zorder>label_5</zorder>
+   <zorder>label_3</zorder>
+   <zorder>label</zorder>
+   <zorder>label_7</zorder>
+  </widget>
+     <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>990</y>
+      <width>301</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel{
+    background-color: qlineargradient(spread:pad, x1:0.231, y1:0.310227, x2:1, y2:1, stop:0 rgba(0, 98, 255, 239), stop:1 rgba(240, 240, 240, 255));
+    font: 700 14pt "Book Antiqua";
+  }</string>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align="center"&gt;&lt;span style=" font-size:16pt;"&gt;Goal of This System&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+     </widget>
+     <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>1050</y>
+      <width>1271</width>
+      <height>261</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 255, 255);
+  border: 5px solid blue;
+  border-radius: 5px;
+  font: 12pt "Segoe UI";
+
+  </string>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The primary goal is to bring &lt;span style=" font-weight:696;"&gt;digital transformation&lt;/span&gt; to the barangay by:&lt;/p&gt;&lt;ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;"&gt;&lt;li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;Making services &lt;span style=" font-weight:696;"&gt;more accessible&lt;/span&gt;&lt;/li&gt;&lt;li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;Reducing long lines and processing delays&lt;/li&gt;&lt;li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;Strengthening &lt;span style=" font-weight:696;"&gt;data security&lt;/span&gt;&lt;/li&gt;&lt;li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;Ensuring &lt;span style=" font-weight:696;"&gt;transparency and accountability&lt;/span&gt;&lt;/li&gt;&lt;li style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;Providing a platform that is &lt;span style=" font-weight:696;"&gt;organized, modern, and future-ready&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+     </widget>
+     <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>-40</x>
+      <y>0</y>
+      <width>1411</width>
+      <height>611</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: qlineargradient(spread:pad, x1:0.527174, y1:0.699, x2:1, y2:0.614, stop:0.149254 rgba(0, 102, 210, 248), stop:1 rgba(7, 27, 72, 240));</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>../../../../Download/1000006701.jpeg</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+     </widget>
+     <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>1371</width>
+      <height>611</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(25, 118, 210, 180), stop:1 rgba(4, 15, 40, 220));
+
+  color: rgb(255, 255, 255);</string>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align="center"&gt;&lt;span style=" font-size:36pt;"&gt;BARANGAY E-SERVICES MANAGEMENT SYSTEM&lt;/span&gt;&lt;/p&gt;&lt;p align="center"&gt;&lt;span style=" font-size:24pt;"&gt;BALIBAGO, CALATAGAN, BATANGAS&lt;/span&gt;&lt;/p&gt;&lt;p align="center"&gt;&lt;br/&gt;&lt;/p&gt;&lt;p align="center"&gt;&lt;br/&gt;&lt;/p&gt;&lt;p align="center"&gt;&lt;span style=" font-size:12pt;"&gt;Barangay E-Services Management System is a digital platform designed to modernize&lt;/span&gt;&lt;/p&gt;&lt;p align="center"&gt;&lt;span style=" font-size:12pt;"&gt;and simplify barangay operations in Barangay Balibago, Calatagan, Batangas.&lt;/span&gt;&lt;/p&gt;&lt;p align="center"&gt;&lt;span style=" font-size:12pt;"&gt;This system replaces manual paperwork with a secure, automated process where residents&lt;/span&gt;&lt;/p&gt;&lt;p align="center"&gt;&lt;span style=" font-size:12pt;"&gt;can register, request documents, and track the status of their transactions.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+     </widget>
+     <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>860</x>
+      <y>850</y>
+      <width>451</width>
+      <height>451</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>../../../../Download/1000020410.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+     </widget>
+    <zorder>label_6</zorder>
+    <zorder>label_2</zorder>
+    <zorder>label_4</zorder>
+    <zorder>label_5</zorder>
+    <zorder>label_3</zorder>
+    <zorder>label</zorder>
+    <zorder>label_7</zorder>
+    </widget>
+    <widget class="QMenuBar" name="menubar">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>1366</width>
+      <height>26</height>
+     </rect>
+    </property>
+    </widget>
+    <widget class="QStatusBar" name="statusbar"/>
+   </widget>
+   <resources/>
+   <connections/>
+  </ui>
