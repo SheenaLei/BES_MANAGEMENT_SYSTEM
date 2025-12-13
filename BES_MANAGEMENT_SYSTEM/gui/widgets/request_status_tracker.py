@@ -20,8 +20,8 @@ class RequestStatusWidget(QtWidgets.QWidget):
         
         self.init_ui()
         self.load_requests()
-        if self.requests:
-            self.display_request(0)
+        # Always call display_request to update UI (handles both empty and non-empty cases)
+        self.display_request(0)
     
     def init_ui(self):
         """Initialize the UI components"""
@@ -40,8 +40,8 @@ class RequestStatusWidget(QtWidgets.QWidget):
         # Title and navigation header
         header_layout = QtWidgets.QHBoxLayout()
         
-        # Request ID and Status label
-        self.request_header_label = QtWidgets.QLabel("REQUEST ID: Loading...")
+        # Request Status label (no ID shown to users)
+        self.request_header_label = QtWidgets.QLabel("Loading...")
         self.request_header_label.setAlignment(QtCore.Qt.AlignCenter)
         self.request_header_label.setStyleSheet("""
             font-size: 11pt;
@@ -701,8 +701,9 @@ class RequestStatusWidget(QtWidgets.QWidget):
             "Cancelled": "#9e9e9e"
         }.get(request["status"], "#666")
         
+        # Show status only (no ID for users)
         self.request_header_label.setText(
-            f'REQUEST ID: {request["id"]} | <span style="color: {status_color};">{request["status"].upper()}</span>'
+            f'<span style="color: {status_color};">STATUS: {request["status"].upper()}</span>'
         )
         self.request_header_label.setTextFormat(QtCore.Qt.RichText)
         
@@ -945,7 +946,7 @@ class RequestStatusWidget(QtWidgets.QWidget):
                 QtWidgets.QMessageBox.information(
                     self,
                     "Request Cancelled",
-                    f"Your request (ID: {request['id']}) has been cancelled successfully.",
+                    "Your request has been cancelled successfully.",
                     QtWidgets.QMessageBox.Ok
                 )
                 

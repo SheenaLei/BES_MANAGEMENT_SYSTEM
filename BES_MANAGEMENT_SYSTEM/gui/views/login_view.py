@@ -3,6 +3,7 @@ from PyQt5 import uic, QtWidgets, QtCore, QtGui
 from pathlib import Path
 from app.controllers.auth_controllers import AuthController
 from gui.widgets.notification_bar import NotificationBar
+from gui.window_state import save_window_state, apply_window_state
 
 # Import compiled resources for background images
 try:
@@ -10,7 +11,7 @@ try:
 except ImportError:
     pass  # Resources not compiled yet
 
-UI_PATH = Path(__file__).resolve().parent.parent / "ui" / "loginUi3_revised.ui"
+UI_PATH = Path(__file__).resolve().parent.parent / "ui" / "loginUi3_revised_1.ui"
 
 class LoginWindow(QtWidgets.QDialog):
     def __init__(self):
@@ -24,6 +25,52 @@ class LoginWindow(QtWidgets.QDialog):
                            QtCore.Qt.WindowMinimizeButtonHint | 
                            QtCore.Qt.WindowMaximizeButtonHint | 
                            QtCore.Qt.WindowCloseButtonHint)
+
+        # Stretch content to fill when maximized (similar to welcome screen)
+        self._container = self.findChild(QtWidgets.QWidget, "widget")
+        self._bg = self.findChild(QtWidgets.QLabel, "label_5")
+        self._overlay = self.findChild(QtWidgets.QLabel, "label_7")
+        self._footer = self.findChild(QtWidgets.QLabel, "label_8")
+        self._topbar = self.findChild(QtWidgets.QLabel, "label_9")
+
+        # Ensure background scales properly if present
+        if self._bg:
+            ss = self._bg.styleSheet()
+            if "image:" in ss and "border-image:" not in ss:
+                self._bg.setStyleSheet(ss.replace("image:", "border-image:"))
+            self._bg.setScaledContents(True)
+
+        # Design reference size (fallback if needed)
+        self._base_w, self._base_h = 1305, 879
+
+        def _resize_all(event=None):
+            # Use full dialog size
+            w, h = self.width(), self.height()
+
+            # Container fills window
+            if self._container:
+                self._container.setGeometry(0, 0, w, h)
+
+            # Background and overlay fill
+            if self._bg:
+                self._bg.setGeometry(0, 0, w, h)
+            if self._overlay:
+                self._overlay.setGeometry(0, 0, w, h)
+
+            # Bars stick to edges
+            if self._footer and self._footer.height():
+                fh = max(30, int(self._footer.height() * (h / self._base_h)))
+                self._footer.setGeometry(0, h - fh, w, fh)
+            if self._topbar and self._topbar.height():
+                th = max(30, int(self._topbar.height() * (h / self._base_h)))
+                self._topbar.setGeometry(0, 0, w, th)
+
+            if event:
+                QtWidgets.QDialog.resizeEvent(self, event)
+
+        # Hook resize to keep layout responsive
+        self.resizeEvent = _resize_all
+        QtCore.QTimer.singleShot(0, _resize_all)
         
         # Create notification bar (Universal)
         self.notification = NotificationBar(self)
@@ -218,18 +265,21 @@ class LoginWindow(QtWidgets.QDialog):
                 self.notification.show_error("Account not found!")
                 return
             
+            # Save current window state before closing
+            save_window_state(self)
+            
             # Check role and open appropriate dashboard
             if account.user_role in ['Admin', 'Staff']:
                 # ADMIN DASHBOARD
                 from gui.views.sidebar_home_view import SidebarHomeWindow
                 self.dashboard = SidebarHomeWindow()
-                self.dashboard.show()
+                apply_window_state(self.dashboard)
 
             else:
                 # USER DASHBOARD (Resident)
                 from gui.views.sidebar_home_user_view import SidebarHomeUserWindow
                 self.dashboard = SidebarHomeUserWindow(username=self.current_username)
-                self.dashboard.show()
+                apply_window_state(self.dashboard)
 
             self.close()
             

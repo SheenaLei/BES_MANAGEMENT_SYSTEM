@@ -2,6 +2,7 @@
 from PyQt5 import uic, QtWidgets, QtCore, QtGui
 from pathlib import Path
 from gui.widgets.notification_bar import NotificationBar
+from gui.window_state import save_window_state, apply_window_state
 from app.db import SessionLocal
 from app.models import Resident, Account
 from app.config import get_philippine_time
@@ -37,16 +38,24 @@ class AnimatedCounterLabel(QtWidgets.QLabel):
 
 
 class AnimatedBarChart(QtWidgets.QWidget):
-    """Animated bar chart widget for transactions"""
+    """Animated bar chart widget for request summary - shows REAL data from database"""
     
-    def __init__(self, parent=None):
+    def __init__(self, request_data=None, parent=None):
         super().__init__(parent)
         self.setMinimumSize(200, 200)
         
-        # Sample data - days of the week
-        self.labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-        self.values = [3, 5, 2, 8, 4, 6, 1]  # Sample transaction counts
-        self.target_heights = [v / max(self.values) for v in self.values]
+        # If request_data is provided, use it; otherwise use empty data
+        if request_data:
+            self.labels = request_data.get('labels', [])
+            self.values = request_data.get('values', [])
+        else:
+            # Default empty data - 7 days with 0 values
+            self.labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            self.values = [0, 0, 0, 0, 0, 0, 0]
+        
+        # Calculate target heights based on max value (handle empty/zero data)
+        max_val = max(self.values) if self.values and max(self.values) > 0 else 1
+        self.target_heights = [v / max_val if max_val > 0 else 0 for v in self.values]
         self.current_heights = [0.0] * len(self.values)
         
         # Colors for bars
@@ -58,6 +67,11 @@ class AnimatedBarChart(QtWidgets.QWidget):
             QtGui.QColor(100, 149, 237),  # Cornflower Blue
             QtGui.QColor(65, 105, 225),   # Royal Blue
             QtGui.QColor(0, 206, 209),    # Dark Turquoise
+            QtGui.QColor(32, 178, 170),   # Light Sea Green
+            QtGui.QColor(0, 139, 139),    # Dark Cyan
+            QtGui.QColor(72, 61, 139),    # Dark Slate Blue
+            QtGui.QColor(123, 104, 238),  # Medium Slate Blue
+            QtGui.QColor(106, 90, 205),   # Slate Blue
         ]
         
         # Animation
@@ -68,6 +82,24 @@ class AnimatedBarChart(QtWidgets.QWidget):
         # Hover animation
         self.hovered_bar = -1
         self.setMouseTracking(True)
+    
+    def update_data(self, request_data):
+        """Update chart with new data and restart animation"""
+        if request_data:
+            self.labels = request_data.get('labels', [])
+            self.values = request_data.get('values', [])
+        else:
+            self.labels = []
+            self.values = []
+        
+        # Recalculate target heights
+        max_val = max(self.values) if self.values and max(self.values) > 0 else 1
+        self.target_heights = [v / max_val if max_val > 0 else 0 for v in self.values]
+        self.current_heights = [0.0] * len(self.values)
+        
+        # Restart animation
+        self.animation_timer.start(20)
+        self.update()
         
     def animate_bars(self):
         all_done = True
@@ -85,9 +117,13 @@ class AnimatedBarChart(QtWidgets.QWidget):
     
     def mouseMoveEvent(self, event):
         # Detect which bar is hovered
+        if not self.values:
+            return
+            
         width = self.width()
-        height = self.height()
         bar_count = len(self.values)
+        if bar_count == 0:
+            return
         bar_width = (width - 60) / bar_count - 10
         
         x = event.x()
@@ -123,51 +159,72 @@ class AnimatedBarChart(QtWidgets.QWidget):
             y = 30 + i * (height - 80) / 4
             painter.drawLine(40, int(y), width - 20, int(y))
         
+        # Handle empty data
+        if not self.values or len(self.values) == 0:
+            painter.setPen(QtGui.QColor(150, 150, 150))
+            painter.setFont(QtGui.QFont("Arial", 12))
+            painter.drawText(self.rect(), QtCore.Qt.AlignCenter, "No request data available")
+            return
+        
         # Draw bars
         bar_count = len(self.values)
         bar_width = (width - 60) / bar_count - 10
         max_bar_height = height - 80
         
-        for i, (label, value, h) in enumerate(zip(self.labels, self.values, self.current_heights)):
+        for i in range(len(self.labels)):
+            if i >= len(self.values) or i >= len(self.current_heights):
+                continue
+                
+            label = self.labels[i]
+            value = self.values[i]
+            h = self.current_heights[i]
+            
             bar_x = 40 + i * ((width - 60) / bar_count) + 5
             bar_height = h * max_bar_height
             bar_y = height - 50 - bar_height
             
-            # Bar shadow
-            shadow_color = QtGui.QColor(0, 0, 0, 30)
-            painter.fillRect(
-                QtCore.QRectF(bar_x + 3, bar_y + 3, bar_width, bar_height),
-                shadow_color
-            )
-            
-            # Bar gradient
-            color = self.bar_colors[i % len(self.bar_colors)]
-            if i == self.hovered_bar:
-                color = color.lighter(120)
-            
-            gradient = QtGui.QLinearGradient(bar_x, bar_y, bar_x + bar_width, bar_y)
-            gradient.setColorAt(0, color)
-            gradient.setColorAt(1, color.darker(110))
-            
-            # Draw rounded bar
-            path = QtGui.QPainterPath()
-            path.addRoundedRect(
-                QtCore.QRectF(bar_x, bar_y, bar_width, bar_height),
-                5, 5
-            )
-            painter.fillPath(path, gradient)
-            
-            # Value label on top of bar
-            if bar_height > 20:
-                painter.setPen(QtGui.QColor(255, 255, 255))
-                painter.setFont(QtGui.QFont("Arial", 9, QtGui.QFont.Bold))
-                painter.drawText(
-                    QtCore.QRectF(bar_x, bar_y + 5, bar_width, 20),
-                    QtCore.Qt.AlignCenter,
-                    str(value)
+            # Only draw bar if there's a value
+            if value > 0 and bar_height > 0:
+                # Bar shadow
+                shadow_color = QtGui.QColor(0, 0, 0, 30)
+                painter.fillRect(
+                    QtCore.QRectF(bar_x + 3, bar_y + 3, bar_width, bar_height),
+                    shadow_color
                 )
+                
+                # Bar gradient
+                color = self.bar_colors[i % len(self.bar_colors)]
+                if i == self.hovered_bar:
+                    color = color.lighter(120)
+                
+                gradient = QtGui.QLinearGradient(bar_x, bar_y, bar_x + bar_width, bar_y)
+                gradient.setColorAt(0, color)
+                gradient.setColorAt(1, color.darker(110))
+                
+                # Draw rounded bar
+                path = QtGui.QPainterPath()
+                path.addRoundedRect(
+                    QtCore.QRectF(bar_x, bar_y, bar_width, bar_height),
+                    5, 5
+                )
+                painter.fillPath(path, gradient)
+                
+                # Value label on top of bar
+                if bar_height > 20:
+                    painter.setPen(QtGui.QColor(255, 255, 255))
+                    painter.setFont(QtGui.QFont("Arial", 9, QtGui.QFont.Bold))
+                    painter.drawText(
+                        QtCore.QRectF(bar_x, bar_y + 5, bar_width, 20),
+                        QtCore.Qt.AlignCenter,
+                        str(int(value))
+                    )
+            else:
+                # Draw a thin baseline for zero values
+                painter.setPen(QtGui.QPen(QtGui.QColor(200, 200, 200), 2))
+                baseline_y = height - 50
+                painter.drawLine(int(bar_x), int(baseline_y), int(bar_x + bar_width), int(baseline_y))
             
-            # Label below
+            # Label below (always show)
             painter.setPen(QtGui.QColor(80, 80, 80))
             painter.setFont(QtGui.QFont("Arial", 8))
             painter.drawText(
@@ -590,7 +647,7 @@ class SidebarHomeUserWindow(QtWidgets.QMainWindow):
             # Initialize filter state
             if not hasattr(self, 'dashboard_filter'):
                 self.dashboard_filter = {
-                    'type': 'all',  # all, today, week, month, year, custom
+                    'type': 'year',  # Default to year for monthly breakdown
                     'start_date': None,
                     'end_date': None,
                 }
@@ -876,7 +933,23 @@ class SidebarHomeUserWindow(QtWidgets.QMainWindow):
         left_layout.setContentsMargins(15, 15, 15, 15)
         left_layout.setSpacing(10)
         
-        weekly_label = QtWidgets.QLabel("TRANSACTIONS")
+        # Get current filter type for label
+        filter_type = 'year'  # Default
+        if hasattr(self, 'dashboard_filter'):
+            filter_type = self.dashboard_filter.get('type', 'year')
+        
+        # Create filter-specific label
+        filter_labels = {
+            'today': "TODAY'S REQUESTS",
+            'week': "THIS WEEK'S REQUESTS",
+            'month': "THIS MONTH'S REQUESTS",
+            'year': "THIS YEAR'S REQUESTS",
+            'all': "ALL-TIME REQUESTS",
+            'custom': "CUSTOM PERIOD REQUESTS"
+        }
+        label_text = filter_labels.get(filter_type, "REQUEST SUMMARY")
+        
+        weekly_label = QtWidgets.QLabel(label_text)
         weekly_label.setStyleSheet("""
             QLabel {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:0, 
@@ -891,8 +964,11 @@ class SidebarHomeUserWindow(QtWidgets.QMainWindow):
         weekly_label.setAlignment(QtCore.Qt.AlignCenter)
         left_layout.addWidget(weekly_label)
         
-        # Add animated bar chart for transactions
-        bar_chart = AnimatedBarChart()
+        # Get request summary data (filtered by date range)
+        request_data = self.get_request_summary_data()
+        
+        # Add animated bar chart for request summary with real data
+        bar_chart = AnimatedBarChart(request_data=request_data)
         bar_chart.setMinimumHeight(250)
         left_layout.addWidget(bar_chart, stretch=1)
         
@@ -1086,6 +1162,134 @@ class SidebarHomeUserWindow(QtWidgets.QMainWindow):
             'pending': 8,
             'cancelled': 3,
         }
+    
+    def get_request_summary_data(self):
+        """Get request summary data for bar chart based on certificate requests"""
+        from datetime import datetime, timedelta
+        from collections import defaultdict
+        
+        try:
+            from app.db import SessionLocal
+            from app.models import CertificateRequest
+            
+            # Ensure user is logged in
+            if not self.account or not self.resident:
+                print(f"❌ No user logged in - account:{self.account} resident:{self.resident}")
+                return {'labels': [], 'values': []}
+            
+            db = SessionLocal()
+            resident_id = self.resident.resident_id
+            print(f"📊 Getting request data for resident_id={resident_id}")
+            
+            # Determine date range based on filter
+            filter_type = 'year'  # Default to year for better visibility
+            start_date = None
+            end_date = datetime.now().date()
+            
+            if hasattr(self, 'dashboard_filter'):
+                filter_type = self.dashboard_filter.get('type', 'year')
+                start_date = self.dashboard_filter.get('start_date')
+                end_date = self.dashboard_filter.get('end_date') or datetime.now().date()
+            
+            # Set default start date based on filter type
+            if not start_date:
+                if filter_type == 'today':
+                    start_date = end_date
+                elif filter_type == 'week':
+                    start_date = end_date - timedelta(days=6)
+                elif filter_type == 'month':
+                    start_date = end_date.replace(day=1)
+                elif filter_type == 'year':
+                    start_date = end_date.replace(month=1, day=1)
+                else:  # all
+                    start_date = datetime(2020, 1, 1).date()
+            
+            print(f"📅 Date range: {start_date} to {end_date}, filter: {filter_type}")
+            
+            # Query requests from CertificateRequest table for this resident
+            requests_query = db.query(CertificateRequest).filter(
+                CertificateRequest.resident_id == resident_id
+            )
+            
+            # Apply date filter based on when request was created
+            if start_date and end_date:
+                requests_query = requests_query.filter(
+                    CertificateRequest.created_at >= datetime.combine(start_date, datetime.min.time()),
+                    CertificateRequest.created_at <= datetime.combine(end_date, datetime.max.time())
+                )
+            
+            requests = requests_query.all()
+            
+            print(f"📄 Loaded {len(requests)} requests for resident {resident_id}")
+            
+            # Group requests by appropriate time period
+            request_data = defaultdict(int)
+            
+            for req in requests:
+                # Use created_at date for grouping
+                req_date = req.created_at
+                
+                if req_date:
+                    if filter_type == 'today':
+                        # Round to nearest 3-hour block
+                        hour_block = (req_date.hour // 3) * 3
+                        key = datetime(2000, 1, 1, hour_block).strftime('%I %p').lstrip('0')
+                    elif filter_type == 'week':
+                        day_names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                        key = day_names[req_date.weekday()]
+                    elif filter_type == 'month':
+                        week_num = (req_date.day - 1) // 7 + 1
+                        key = f"Week {week_num}"
+                    elif filter_type == 'year':
+                        month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                                      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                        key = month_names[req_date.month - 1]
+                    else:  # all
+                        key = str(req_date.year)
+                    
+                    request_data[key] += 1
+            
+            # Generate labels and values based on filter type
+            if filter_type == 'today':
+                labels = []
+                for h in range(0, 24, 3):
+                    label = datetime(2000, 1, 1, h).strftime('%I %p').lstrip('0')
+                    labels.append(label)
+                values = [request_data.get(l, 0) for l in labels]
+                
+            elif filter_type == 'week':
+                labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                values = [request_data.get(d, 0) for d in labels]
+                
+            elif filter_type == 'month':
+                labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5']
+                values = [request_data.get(w, 0) for w in labels]
+                
+            elif filter_type == 'year':
+                labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                values = [request_data.get(m, 0) for m in labels]
+                
+            else:  # all time
+                if request_data:
+                    labels = sorted(request_data.keys())
+                    values = [request_data[y] for y in labels]
+                else:
+                    labels = [str(datetime.now().year)]
+                    values = [0]
+            
+            db.close()
+            
+            total = sum(values)
+            print(f"📊 Request summary (Total: {total}): {dict(zip(labels, values))}")
+            
+            return {'labels': labels, 'values': values}
+            
+        except Exception as e:
+            print(f"❌ Error loading request summary: {e}")
+            import traceback
+            traceback.print_exc()
+            return {'labels': [], 'values': []}
     
     def create_dashboard_card_with_value(self, title, value, color):
         """Create a dashboard card widget with animated circular progress"""
@@ -1991,7 +2195,6 @@ class SidebarHomeUserWindow(QtWidgets.QMainWindow):
     def show_my_request_page(self):
         """Show user's certificate requests (My Requests) - Shopee-style Status Tracker in Table"""
         try:
-
             # Load the status_user.ui file (with your table design)
             status_ui_path = Path(__file__).resolve().parent.parent / "ui" / "status_user.ui"
             
@@ -2383,10 +2586,18 @@ class SidebarHomeUserWindow(QtWidgets.QMainWindow):
             about_widget.setParent(None)
             about_widget.setStyleSheet("background-color: white;")
             
-            # Set expanding size policy to grow with window
+            # Set expanding size policy to grow with window; keep sensible minimums
             about_widget.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-            # Minimum size ensures all content is visible when window is smaller
             about_widget.setMinimumSize(1024, 1366)
+
+            # Add subtle fade-in animation for branding polish
+            opacity = QtWidgets.QGraphicsOpacityEffect()
+            about_widget.setGraphicsEffect(opacity)
+            anim = QtCore.QPropertyAnimation(opacity, b"opacity", about_widget)
+            anim.setDuration(600)
+            anim.setStartValue(0.0)
+            anim.setEndValue(1.0)
+            anim.start(QtCore.QAbstractAnimation.DeleteWhenStopped)
 
             scroll_area = QtWidgets.QScrollArea()
             scroll_area.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -2398,6 +2609,55 @@ class SidebarHomeUserWindow(QtWidgets.QMainWindow):
             scroll_area.setContentsMargins(0, 0, 0, 0)
             scroll_area.setViewportMargins(0, 0, 0, 0)
             scroll_area.setStyleSheet("QScrollArea { background-color: white; border: none; margin: 0px; padding: 0px; }")
+
+            # Ensure all sections stretch with the viewport and shrink without clipping
+            def resize_allabout(event):
+                viewport_width = scroll_area.viewport().width()
+                margin = 20  # consistent side margin
+                body_width = max(800, viewport_width - 2 * margin)
+
+                about_widget.setMinimumWidth(body_width)
+                about_widget.resize(body_width, about_widget.height())
+
+                # Hero background and overlay title
+                bg_label = about_widget.findChild(QtWidgets.QLabel, "label_6")
+                hero_label = about_widget.findChild(QtWidgets.QLabel, "label")
+                if bg_label:
+                    bg_label.setGeometry(0, bg_label.y(), body_width, bg_label.height())
+                    bg_label.setScaledContents(True)
+                if hero_label:
+                    hero_label.setGeometry(0, hero_label.y(), body_width, hero_label.height())
+                    hero_label.setAlignment(QtCore.Qt.AlignCenter)
+
+                # Sections: headings and boxes
+                heading1 = about_widget.findChild(QtWidgets.QLabel, "label_2")
+                box1 = about_widget.findChild(QtWidgets.QLabel, "label_3")
+                heading2 = about_widget.findChild(QtWidgets.QLabel, "label_4")
+                box2 = about_widget.findChild(QtWidgets.QLabel, "label_5")
+                seal = about_widget.findChild(QtWidgets.QLabel, "label_7")
+
+                x = margin
+                section_width = body_width - 2 * margin
+
+                if heading1:
+                    heading1.setGeometry(x, heading1.y(), section_width, heading1.height())
+                    heading1.setAlignment(QtCore.Qt.AlignCenter)
+                if box1:
+                    box1.setGeometry(x + 10, box1.y(), section_width - 20, box1.height())
+                if heading2:
+                    heading2.setGeometry(x, heading2.y(), section_width, heading2.height())
+                    heading2.setAlignment(QtCore.Qt.AlignCenter)
+                if box2:
+                    box2.setGeometry(x + 10, box2.y(), section_width - 20, box2.height())
+                if seal:
+                    seal_size = min(451, section_width // 2)
+                    seal_x = x + section_width - seal_size
+                    seal.setGeometry(seal_x, seal.y(), seal_size, seal_size)
+                    seal.setScaledContents(True)
+
+                QtWidgets.QScrollArea.resizeEvent(scroll_area, event)
+
+            scroll_area.resizeEvent = resize_allabout
 
             self.replace_content(scroll_area)
             self.notification.show_info("ℹ️ All About page")
@@ -2427,9 +2687,12 @@ class SidebarHomeUserWindow(QtWidgets.QMainWindow):
     def open_login(self):
         """Return to login window"""
         try:
+            # Save current window state before closing
+            save_window_state(self)
+            
             from gui.views.login_view import LoginWindow
             self.login_window = LoginWindow()
-            self.login_window.show()
+            apply_window_state(self.login_window)
             self.close()
         except Exception as e:
             pass

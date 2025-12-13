@@ -2,6 +2,7 @@
 from PyQt5 import uic, QtWidgets, QtCore, QtGui
 from pathlib import Path
 from gui.widgets.notification_bar import NotificationBar
+from gui.window_state import save_window_state, apply_window_state
 from app.db import SessionLocal
 from app.models import Resident
 from app.config import get_philippine_time
@@ -114,10 +115,11 @@ class AdminAnimatedBarChart(QtWidgets.QWidget):
                     CertificateRequest.created_at >= date.replace(day=1),
                     CertificateRequest.created_at < (date.replace(day=28) + timedelta(days=4)).replace(day=1)
                 ).count()
-                self.values.append(count if count > 0 else (i + 1) * 5)  # Fallback sample data
-            self.max_value = max(self.values) if self.values else 100
+                self.values.append(count)  # Use real count, no fallback
+            self.max_value = max(self.values) if self.values and max(self.values) > 0 else 100
             session.close()
         except Exception as e:
+            print(f"Error loading chart data: {e}")
             pass
     def animate(self):
         if self.animation_progress < 1.0:
@@ -484,6 +486,9 @@ class SidebarHomeWindow(QtWidgets.QMainWindow):
         # pushButton_6 = All About icon (info/about page)
         if hasattr(self, 'pushButton_6'):
             self.pushButton_6.clicked.connect(self.show_all_about_page)
+        # pushButton_16 = ALL ABOUT text button (expanded sidebar)
+        if hasattr(self, 'pushButton_16'):
+            self.pushButton_16.clicked.connect(self.show_all_about_page)
         # pushButton_7 = History icon
         if hasattr(self, 'pushButton_7'):
             self.pushButton_7.clicked.connect(self.show_history_page)
@@ -2248,19 +2253,101 @@ class SidebarHomeWindow(QtWidgets.QMainWindow):
             self.replace_content(page)
             self.notification.show_info("🔔 Notifications")
     def show_all_about_page(self):
-        """Show All About / Information page"""
-        page = QtWidgets.QWidget()
-        layout = QtWidgets.QVBoxLayout(page)
-        label = QtWidgets.QLabel("ℹ️ All About Barangay")
-        label.setStyleSheet("font-size: 28pt; font-weight: bold; color: #2c3e50; padding: 40px;")
-        label.setAlignment(QtCore.Qt.AlignCenter)
-        layout.addWidget(label)
-        info_label = QtWidgets.QLabel("Information about the Barangay E-Services System")
-        info_label.setStyleSheet("font-size: 14pt; color: #666; padding: 20px;")
-        info_label.setAlignment(QtCore.Qt.AlignCenter)
-        layout.addWidget(info_label)
-        self.replace_content(page)
-        self.notification.show_info("ℹ️ All About")
+        """Show All About / Information page (admin) matching user view"""
+        try:
+            about_ui_path = Path(__file__).resolve().parent.parent / "ui" / "ALL ABOUT.ui"
+
+            if not about_ui_path.exists():
+                self.notification.show_error(f"❌ All About UI file not found: {about_ui_path}")
+                return
+
+            temp_window = QtWidgets.QMainWindow()
+            uic.loadUi(str(about_ui_path), temp_window)
+
+            about_widget = temp_window.centralWidget()
+            if not about_widget:
+                self.notification.show_error("❌ No central widget found in All About UI")
+                return
+
+            about_widget.setParent(None)
+            about_widget.setStyleSheet("background-color: white;")
+            about_widget.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+            about_widget.setMinimumSize(1024, 1366)
+
+            # Subtle fade-in animation for polish
+            opacity = QtWidgets.QGraphicsOpacityEffect()
+            about_widget.setGraphicsEffect(opacity)
+            anim = QtCore.QPropertyAnimation(opacity, b"opacity", about_widget)
+            anim.setDuration(600)
+            anim.setStartValue(0.0)
+            anim.setEndValue(1.0)
+            anim.start(QtCore.QAbstractAnimation.DeleteWhenStopped)
+
+            scroll_area = QtWidgets.QScrollArea()
+            scroll_area.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+            scroll_area.setWidget(about_widget)
+            scroll_area.setWidgetResizable(True)
+            scroll_area.setFrameShape(QtWidgets.QFrame.NoFrame)
+            scroll_area.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+            scroll_area.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+            scroll_area.setContentsMargins(0, 0, 0, 0)
+            scroll_area.setViewportMargins(0, 0, 0, 0)
+            scroll_area.setStyleSheet("QScrollArea { background-color: white; border: none; margin: 0px; padding: 0px; }")
+
+            # Stretch content to viewport width with consistent margins; shrink gracefully when smaller
+            def resize_allabout(event):
+                viewport_width = scroll_area.viewport().width()
+                margin = 20
+                body_width = max(800, viewport_width - 2 * margin)
+
+                about_widget.setMinimumWidth(body_width)
+                about_widget.resize(body_width, about_widget.height())
+
+                bg_label = about_widget.findChild(QtWidgets.QLabel, "label_6")
+                hero_label = about_widget.findChild(QtWidgets.QLabel, "label")
+                if bg_label:
+                    bg_label.setGeometry(0, bg_label.y(), body_width, bg_label.height())
+                    bg_label.setScaledContents(True)
+                if hero_label:
+                    hero_label.setGeometry(0, hero_label.y(), body_width, hero_label.height())
+                    hero_label.setAlignment(QtCore.Qt.AlignCenter)
+
+                heading1 = about_widget.findChild(QtWidgets.QLabel, "label_2")
+                box1 = about_widget.findChild(QtWidgets.QLabel, "label_3")
+                heading2 = about_widget.findChild(QtWidgets.QLabel, "label_4")
+                box2 = about_widget.findChild(QtWidgets.QLabel, "label_5")
+                seal = about_widget.findChild(QtWidgets.QLabel, "label_7")
+
+                x = margin
+                section_width = body_width - 2 * margin
+
+                if heading1:
+                    heading1.setGeometry(x, heading1.y(), section_width, heading1.height())
+                    heading1.setAlignment(QtCore.Qt.AlignCenter)
+                if box1:
+                    box1.setGeometry(x + 10, box1.y(), section_width - 20, box1.height())
+                if heading2:
+                    heading2.setGeometry(x, heading2.y(), section_width, heading2.height())
+                    heading2.setAlignment(QtCore.Qt.AlignCenter)
+                if box2:
+                    box2.setGeometry(x + 10, box2.y(), section_width - 20, box2.height())
+                if seal:
+                    seal_size = min(451, section_width // 2)
+                    seal_x = x + section_width - seal_size
+                    seal.setGeometry(seal_x, seal.y(), seal_size, seal_size)
+                    seal.setScaledContents(True)
+
+                QtWidgets.QScrollArea.resizeEvent(scroll_area, event)
+
+            scroll_area.resizeEvent = resize_allabout
+
+            self.replace_content(scroll_area)
+            self.notification.show_info("ℹ️ All About")
+
+        except Exception as e:
+            self.notification.show_error(f"❌ Error loading All About page: {e}")
+            import traceback
+            traceback.print_exc()
     def show_history_page(self):
         """Show History page"""
         page = QtWidgets.QWidget()
@@ -3313,9 +3400,10 @@ class SidebarHomeWindow(QtWidgets.QMainWindow):
             import traceback
             traceback.print_exc()
     def show_payment_page(self):
-        """Show admin payment management page - for requests Ready for Pickup"""
+        """Show admin payment management page - for all accepted requests"""
         try:
             from app.models import CertificateRequest, CertificatePayment, Resident
+            from datetime import datetime
             # Create outer wrapper
             outer_widget = QtWidgets.QWidget()
             outer_widget.setStyleSheet("background-color: #f0f0f0;")
@@ -3354,9 +3442,9 @@ class SidebarHomeWindow(QtWidgets.QMainWindow):
             # Get payment stats from database
             db = SessionLocal()
             try:
-                # Count pending payments (Ready for Pickup status, not yet paid)
-                pending_count = db.query(CertificateRequest).filter(
-                    CertificateRequest.status == 'Ready for Pickup'
+                # Count pending payments (all unpaid payment records)
+                pending_count = db.query(CertificatePayment).filter(
+                    CertificatePayment.is_paid == False
                 ).count()
                 # Count paid today
                 from datetime import datetime, timedelta
@@ -3478,18 +3566,65 @@ class SidebarHomeWindow(QtWidgets.QMainWindow):
                 'Barangay ID': 100.00,
                 'Business Permit': 500.00
             }
-            # Load data - requests that are Ready for Pickup
+            # Load data - ALL accepted requests (Processing, Ready for Pickup, and Completed)
             db = SessionLocal()
             try:
-                requests = db.query(CertificateRequest).filter(
-                    CertificateRequest.status == 'Ready for Pickup'
-                ).order_by(CertificateRequest.updated_at.desc()).all()
-                table.setRowCount(len(requests))
-                for row, req in enumerate(requests):
-                    # Check if payment record exists
-                    payment = db.query(CertificatePayment).filter(
+                # First, ensure all accepted requests have payment records
+                # Query requests that are Processing, Ready for Pickup, or Completed
+                accepted_requests = db.query(CertificateRequest).filter(
+                    CertificateRequest.status.in_(['Processing', 'Ready for Pickup', 'Completed'])
+                ).all()
+                
+                # Create payment records for any that don't have one
+                for req in accepted_requests:
+                    existing_payment = db.query(CertificatePayment).filter(
                         CertificatePayment.request_id == req.request_id
                     ).first()
+                    
+                    if not existing_payment:
+                        # Create payment record for this request
+                        cert_type = req.certificate_type or ''
+                        unit_price = CERTIFICATE_PRICES.get(cert_type, 50.00)
+                        quantity = req.quantity or 1
+                        total_amount = unit_price * quantity
+                        requestor_name = f"{req.first_name or ''} {req.last_name or ''}".strip()
+                        
+                        # For Completed requests, mark as paid
+                        is_paid = (req.status == 'Completed')
+                        
+                        payment = CertificatePayment(
+                            request_id=req.request_id,
+                            resident_id=req.resident_id,
+                            certificate_type=cert_type,
+                            requestor_name=requestor_name,
+                            quantity=quantity,
+                            unit_price=unit_price,
+                            total_amount=total_amount,
+                            is_paid=is_paid,
+                            payment_method='Cash',
+                            created_at=req.created_at or datetime.now(),
+                            received_at=req.updated_at if is_paid else None
+                        )
+                        db.add(payment)
+                        print(f"💰 Created missing payment record for request #{req.request_id} ({cert_type})")
+                
+                db.commit()  # Save any new payment records
+                
+                # Now query all payment records
+                payments = db.query(CertificatePayment).order_by(
+                    CertificatePayment.is_paid.asc(),  # Unpaid first
+                    CertificatePayment.created_at.desc()
+                ).all()
+                
+                table.setRowCount(len(payments))
+                for row, payment in enumerate(payments):
+                    # Get the associated request
+                    req = db.query(CertificateRequest).filter(
+                        CertificateRequest.request_id == payment.request_id
+                    ).first()
+                    
+                    if not req:
+                        continue
                     # ID
                     id_item = QtWidgets.QTableWidgetItem(str(req.request_id))
                     id_item.setTextAlignment(QtCore.Qt.AlignCenter)
@@ -4147,7 +4282,7 @@ class SidebarHomeWindow(QtWidgets.QMainWindow):
         )
         if reply == QtWidgets.QMessageBox.Yes:
             try:
-                from app.models import CertificateRequest
+                from app.models import CertificateRequest, Notification
                 from datetime import datetime
                 db = SessionLocal()
                 try:
@@ -4155,6 +4290,17 @@ class SidebarHomeWindow(QtWidgets.QMainWindow):
                     if req:
                         req.status = "Completed"
                         req.updated_at = datetime.now()
+                        
+                        # Create notification for user - "Request Completed"
+                        notification = Notification(
+                            resident_id=req.resident_id,
+                            title="🎉 Request Completed",
+                            message=f"Your {req.certificate_type} request has been completed! Thank you for using Barangay E-Services.",
+                            is_read=False,
+                            created_at=datetime.now()
+                        )
+                        db.add(notification)
+                        
                         db.commit()
                         # Update the table cell
                         status_item = QtWidgets.QTableWidgetItem("Completed")
@@ -4213,7 +4359,7 @@ class SidebarHomeWindow(QtWidgets.QMainWindow):
                     notification = Notification(
                         resident_id=request.resident_id,
                         title="💳 Ready for Payment",
-                        message=f"Your {request.certificate_type} request (ID: {request.request_id}) is ready! Please proceed to the Barangay Hall for payment and pickup.",
+                        message=f"Your {request.certificate_type} request is ready! Please proceed to the Barangay Hall for payment and pickup.",
                         is_read=False,
                         created_at=datetime.now()
                     )
@@ -4229,10 +4375,19 @@ class SidebarHomeWindow(QtWidgets.QMainWindow):
         except Exception as e:
             self.notification.show_error(f"❌ Error: {e}")
     def update_request_status(self, request_id, new_status, dialog):
-        """Update the status of a certificate request"""
+        """Update the status of a certificate request and create payment record if accepted"""
         try:
-            from app.models import CertificateRequest
+            from app.models import CertificateRequest, CertificatePayment, Resident, Notification
             from datetime import datetime
+            
+            # Official certificate fees (in PHP) - based on Barangay price list
+            CERTIFICATE_FEES = {
+                'Barangay Indigency': 0.00,      # FREE
+                'Barangay Clearance': 50.00,     # ₱50
+                'Barangay ID': 100.00,           # ₱100
+                'Business Permit': 500.00,       # ₱500
+            }
+            
             db = SessionLocal()
             try:
                 request = db.query(CertificateRequest).filter(CertificateRequest.request_id == request_id).first()
@@ -4240,13 +4395,75 @@ class SidebarHomeWindow(QtWidgets.QMainWindow):
                     request.status = new_status
                     request.reviewed_at = datetime.now()
                     request.updated_at = datetime.now()
-                    db.commit()
+                    
+                    # If accepted (Processing), create a payment record for admin to manage
                     if new_status == 'Processing':
-                        self.notification.show_success("✅ Request accepted! Status set to Processing.")
+                        # Check if payment record already exists
+                        existing_payment = db.query(CertificatePayment).filter(
+                            CertificatePayment.request_id == request_id
+                        ).first()
+                        
+                        if not existing_payment:
+                            # Get resident info
+                            resident = db.query(Resident).filter(
+                                Resident.resident_id == request.resident_id
+                            ).first()
+                            
+                            # Get fee based on certificate type
+                            cert_type = request.certificate_type or ''
+                            unit_price = CERTIFICATE_FEES.get(cert_type, 50.00)
+                            quantity = request.quantity or 1
+                            total_amount = unit_price * quantity
+                            
+                            # Create requestor name
+                            requestor_name = f"{request.first_name or ''} {request.last_name or ''}".strip()
+                            if not requestor_name and resident:
+                                requestor_name = resident.full_name()
+                            
+                            # Create payment record
+                            payment = CertificatePayment(
+                                request_id=request_id,
+                                resident_id=request.resident_id,
+                                certificate_type=cert_type,
+                                requestor_name=requestor_name,
+                                quantity=quantity,
+                                unit_price=unit_price,
+                                total_amount=total_amount,
+                                is_paid=False,  # Not paid yet - admin will mark as paid
+                                payment_method='Cash',  # Default
+                                created_at=datetime.now()
+                            )
+                            db.add(payment)
+                            print(f"💰 Created payment record: {cert_type} - ₱{total_amount} for {requestor_name}")
+                        
+                        # Create notification for user - "Request Accepted"
+                        notification = Notification(
+                            resident_id=request.resident_id,
+                            title="✅ Request Accepted",
+                            message=f"Your {request.certificate_type} request has been accepted and is now being processed. Please wait for further updates.",
+                            is_read=False,
+                            created_at=datetime.now()
+                        )
+                        db.add(notification)
+                        
+                        self.notification.show_success("✅ Request accepted! Payment record created for admin.")
                     elif new_status == 'Declined':
+                        # Create notification for user - "Request Declined"
+                        notification = Notification(
+                            resident_id=request.resident_id,
+                            title="❌ Request Declined",
+                            message=f"Your {request.certificate_type} request has been declined. Please visit the Barangay Hall for more information.",
+                            is_read=False,
+                            created_at=datetime.now()
+                        )
+                        db.add(notification)
+                        
                         self.notification.show_warning("❌ Request declined.")
                     else:
                         self.notification.show_success(f"✅ Status updated to {new_status}")
+                    
+                    db.commit()
+                    
                     # Close dialog and refresh table
                     dialog.accept()
                     self.show_services_page()
@@ -4256,6 +4473,8 @@ class SidebarHomeWindow(QtWidgets.QMainWindow):
                 db.close()
         except Exception as e:
             self.notification.show_error(f"❌ Error updating status: {e}")
+            import traceback
+            traceback.print_exc()
     def load_certificate_requests_table(self, widget):
         """Load certificate requests from database and populate the table"""
         try:
@@ -4655,9 +4874,12 @@ class SidebarHomeWindow(QtWidgets.QMainWindow):
             old_layout.addWidget(new_widget)
     def handle_logout(self):
         """Logout and return to login"""
+        # Save current window state before closing
+        save_window_state(self)
+        
         from gui.views.login_view import LoginWindow
         self.login_window = LoginWindow()
-        self.login_window.show()
+        apply_window_state(self.login_window)
         self.close()
 if __name__ == "__main__":
     import sys

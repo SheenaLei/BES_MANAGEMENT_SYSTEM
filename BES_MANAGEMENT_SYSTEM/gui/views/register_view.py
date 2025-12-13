@@ -39,7 +39,8 @@ class RegisterDialog(QtWidgets.QDialog):
             self.setup_password_visibility()
             
         except Exception as e:
-
+            # Ensure the dialog still initializes even if some widgets are missing
+            pass
     def setup_password_visibility(self):
         """Add eye icon to password fields to toggle visibility"""
         # Create icons
